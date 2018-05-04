@@ -1,0 +1,25 @@
+<ion-content no-bounce>
+
+    <div class="main-content a1-fill-parent a1-relative">
+        <div class="content-container a3-container a3-items-center a3-column">
+            <div class="icon">
+                <img src="./assets/imgs/icon-login.png">
+            </div>
+            <div class="content">
+                <div class="title">{{mTexts.create | uppercase}}</div>
+                <div class="info ">
+                    <input type="text" placeholder={{mTexts.username}}>
+                    <input type="password" placeholder={{mTexts.password}}>
+                    <input type="password" placeholder={{mTexts.confirm}}>
+                </div>
+                <div class="blue-btn" style="margin-top: 30px" (click)="onClickSignUp()">
+                    <span>{{mTexts.signUp | uppercase}}</span>
+                </div>
+                <div class="white-btn a1-margin-top" (click)="onClickLogin()">
+                    <span>{{mTexts.logIn | uppercase}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ion-content>

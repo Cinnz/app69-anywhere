@@ -1,0 +1,30 @@
+page-aw-walkthrough {
+    .background {
+        background: radial-gradient( white -100%, #1D7DC4);
+    }
+    .m-slide {
+        height: 100vh;
+        color: white;
+        position: relative;
+        padding-top: 20vh;
+        .icon-container {
+            height: 50%;
+        }
+        .title-container {
+            height: 50%;
+            .title {
+                font-size: 1.2em;
+            }
+            .sub-title {
+                font-size: .8em;
+                padding: 20px 16vw;
+            }
+        }
+        .next-btn {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            color: white;
+        }
+    }
+}

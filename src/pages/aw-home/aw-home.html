@@ -1,0 +1,57 @@
+<ion-header class="m-header aw-header">
+
+    <ion-toolbar>
+        <ion-buttons left>
+            <button ion-button (click)="onClickMenu()">
+              <ion-icon name="ios-menu-outline"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title>{{ mDatas.circleId?mDatas.circleName:mTexts.title}}</ion-title>
+        <ion-buttons right>
+            <button ion-button icon-only class="more-btn" (click)="onClickMore()">
+              <ion-icon name="ios-more-outline"></ion-icon>
+            </button>
+        </ion-buttons>
+    </ion-toolbar>
+
+</ion-header>
+
+<ion-content no-bounce>
+
+    <div class="main-content a1-fill-parent a3-container a3-column">
+        <div id="map"></div>
+        <div class="rest a3-flex-1">
+            <div class="item-container">
+                <ion-grid no-padding>
+                    <ion-row class="item a3-container" *ngFor="let member of mDatas.circleMembers">
+                        <ion-col col-2 class="avatar-container">
+                            <img [src]="member.avatar">
+                            <div class="status offline" [class.online]="member.isPublic"></div>
+                        </ion-col>
+                        <ion-col col-10 class="info-container a3-container a3-justify-center a3-column">
+                            <ion-row style="margin-bottom: 4px">
+                                <ion-col class="name">
+                                    {{ member.name }}
+                                </ion-col>
+                                <ion-col col-3 class="time">
+                                    {{ member.time | date:'shortTime' }}
+                                </ion-col>
+                            </ion-row>
+                            <ion-row>
+                                <div class="location">{{ member.address }}</div>
+                            </ion-row>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </div>
+            <div class="btn-chat-container a3-container-center">
+                <div class="chat-btn blue-btn">
+                    <span></span>
+                    <span class="title">{{mTexts.chatButton | uppercase}}</span>
+                    <span class="msg-number a3-container-center">{{mDatas.circleNewMessages}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ion-content>

@@ -1,0 +1,40 @@
+<ion-menu type="overlay" [content]="content">
+    <ion-content class="aw-menu">
+        <div class="menu-header a3-container">
+            <div class="menu-avatar">
+                <img [src]="menuDatas.avatar">
+            </div>
+            <div class="menu-username a3-container a3-items-center">
+                <span class="a1-text-ellipsis">{{menuDatas.username}}</span>
+            </div>
+        </div>
+        <div class="menu-circle-container">
+            <div class="title">
+                <span>{{menuTexts.circle | uppercase}}</span>
+            </div>
+            <div class="circles">
+                <div class="circle" *ngFor="let circle of menuDatas.circles" [class.circle-actived]="menuDatas.currentCircleId==circle.id" (click)="onClickCircle(circle)">
+                    <span>{{circle.name}}</span>
+                </div>
+            </div>
+            <div class="buttons-container a3-container a3-justify-center">
+                <div class="button" (click)="onClickAddCircle()">
+                    <span>{{menuTexts.new}}</span>
+                </div>
+                <div class="button">
+                    <span>{{menuTexts.join}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="menu-function-container">
+            <div class="title">
+                <span>{{menuTexts.function | uppercase}}</span>
+            </div>
+            <div class="menu-function" *ngFor="let func of menuDatas.functions">
+                <span>{{func.name}}</span>
+            </div>
+        </div>
+    </ion-content>
+</ion-menu>
+
+<ion-nav [root]="rootPage" #content></ion-nav>

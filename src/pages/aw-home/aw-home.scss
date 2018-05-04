@@ -1,0 +1,104 @@
+page-aw-home {
+    .m-header {
+        border-bottom: 1px solid #D6D6D6;
+        ion-toolbar {
+            .toolbar-background {
+                background: transparent;
+                border: none;
+            }
+        }
+    }
+    .main-content {
+        #map {
+            width: 100vw;
+            height: 60%;
+            background-color: lightgray;
+            position: relative;
+        }
+        .rest {
+            width: 100%;
+            position: relative;
+            background-color: #F5F5F5;
+            overflow: auto;
+            .item-container {
+                height: 80%;
+                overflow: auto;
+                .item {
+                    background-color: white;
+                    border-bottom: 1px solid #F1F1F1;
+                    padding: 0 20px 0 10px;
+                    .avatar-container {
+                        padding: 4px;
+                        position: relative;
+                        img {
+                            width: 100%;
+                            border-radius: 50%;
+                            border: 2px solid #BEBEBE;
+                        }
+                        .status {
+                            position: absolute;
+                            bottom: 4px;
+                            right: 4px;
+                            border: 2px solid white;
+                            border-radius: 50%;
+                            background-color: white;
+                            width: 1em;
+                            height: 1em;
+                        }
+                        .online {
+                            background-color: #38DC54 !important;
+                        }
+                        .offline {
+                            background-color: #EC4747;
+                        }
+                    }
+                    .info-container {
+                        padding-left: 10px;
+                        .name {
+                            padding: 0;
+                            color: #8D8D8D;
+                            font-size: .9em;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                        .time {
+                            padding: 0;
+                            font-size: .9em;
+                            white-space: nowrap;
+                            font-style: italic;
+                            color: #47B1FF;
+                            text-align: right;
+                        }
+                        .location {
+                            color: #464646;
+                            font-weight: 500;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                    }
+                }
+            }
+            .btn-chat-container {
+                height: 20%;
+                width: 100%;
+                .chat-btn {
+                    width: 80%;
+                }
+                .title {
+                    font-size: .9em;
+                    margin: 0 10px;
+                }
+                .msg-number {
+                    width: 1.6em;
+                    height: 1.6em;
+                    background-color: #F54D88;
+                    color: white;
+                    font-size: .8em;
+                    border-radius: 50%;
+                }
+            }
+        }
+    }
+}
