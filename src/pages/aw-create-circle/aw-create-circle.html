@@ -32,7 +32,7 @@
                     </div>
                     <ion-grid>
                         <ion-row>
-                            <ion-col col-4 class="suggest-item-container" *ngFor="let item of mTexts.suggests">
+                            <ion-col col-4 col-sm-3 col-md-2 class="suggest-item-container" *ngFor="let item of mTexts.suggests">
                                 <span class="item" (click)="onClickSuggestItem(item)">{{item}}</span>
                             </ion-col>
                         </ion-row>

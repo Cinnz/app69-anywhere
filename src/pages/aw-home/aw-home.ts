@@ -1,7 +1,7 @@
 import { Location } from './../../providers/aw-classes/location';
 import { Trace } from './../../providers/aw-classes/trace';
 import { Circle } from './../../providers/aw-classes/circle';
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, MenuController, Platform, ActionSheetController } from 'ionic-angular';
 import {
   GoogleMap, GoogleMaps, GoogleMapOptions,
@@ -17,20 +17,24 @@ import { UserBase } from '../../providers/aw-classes/user-base';
   templateUrl: 'aw-home.html',
 })
 export class AwHomePage {
+  @ViewChild('members') members: ElementRef;
   private onTest = true;
 
   map: GoogleMap
 
   mTexts = {
     title: "Vòng kết nối",
-    chatButton: "Trò chuyện nhóm"
+    chatButton: "Trò chuyện nhóm",
+    pickDate: "Ngày cần xem"
   }
 
   mDatas = {
     circleId: "",
     circleName: "",
     circleMembers: [],
-    circleNewMessages: 0
+    circleNewMessages: 0,
+    isOnDetail: false,
+    memberDetail: null
   }
 
   constructor(public navCtrl: NavController,
@@ -120,12 +124,12 @@ export class AwHomePage {
         console.log(user1.time);
 
 
-        circle.addMembers([user1, user2, user3, user4, user5]);
+        // circle.addMembers([user1, user2, user3, user4, user5]);
 
         // setTimeout(() => {
         res(circle);
         // }, 3000);
-      })
+      });
     }
     else {
 
@@ -137,14 +141,78 @@ export class AwHomePage {
   }
 
   onClickMore() {
-    // this.mActionSheetController.create({
-    //   title: "Tùy chọn",
-    //   subTitle: "subTitle",
-    //   buttons: [{
-    //     text: "Tạo mới lộ trình/địa điểm",
-    //     handler?: () => boolean | void;
-    //   }],
-    //   enableBackdropDismiss: true
-    // });
+    let action = this.mActionSheetController.create({
+      title: "Tùy chọn",
+      buttons: [{
+        text: "Tạo mới lộ trình/địa điểm",
+        handler: () => {
+
+        }
+      }, {
+        text: "Cài đặt chia sẻ",
+        handler: () => {
+
+        }
+      }, {
+        text: "Đo khoảng cách",
+        handler: () => {
+
+        }
+      }, {
+        text: "Rời vòng kết nối",
+        role: "destructive",
+        handler: () => {
+
+        }
+      }, {
+        text: "Quay lại",
+        role: "cancel",
+        handler: () => {
+
+        }
+      }],
+      enableBackdropDismiss: true
+    });
+
+    action.present();
+  }
+
+  /**
+   * Hiển thị danh sách thành viên bên trên map
+   */
+  showMembers() {
+    if (this.members && this.members.nativeElement.classList.contains("hidden-members")) {
+      this.members.nativeElement.classList.remove("hidden-members");
+    }
+  }
+
+  /**
+   * Ẩn danh sách thành viên bên trên map
+   */
+  hideMembers() {
+    if (this.members && !this.members.nativeElement.classList.contains("hidden-members")) {
+      this.members.nativeElement.classList.add("hidden-members");
+    }
+  }
+
+  onClickMember(member: UserBase) {
+    this.mDatas.memberDetail = member;
+
+    this.showMembers();
+    this.mDatas.isOnDetail = true;
+  }
+
+  onClickTitle() {
+    console.log(this.members.nativeElement.classList);
+
+  }
+
+  onClickClose() {
+    this.hideMembers();
+    this.mDatas.isOnDetail = false;
+  }
+
+  onClickChangeMemberDetail(member: UserBase) {
+    this.mDatas.memberDetail = member;
   }
 }

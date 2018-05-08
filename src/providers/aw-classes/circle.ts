@@ -37,6 +37,16 @@ export class Circle {
         return this._routes;
     }
 
+    onResponseData(members: Array<UserBase>, routes: Array<Route>) {
+        members.forEach(member => {
+            this.addMember(member);
+        });
+
+        routes.forEach(route => {
+            this.addRoute(route);
+        })
+    }
+
     updateAdmin(adminId: string) {
         this._adminId = adminId;
     }
@@ -49,16 +59,8 @@ export class Circle {
         this._members.push(user);
     }
 
-    /**
-     * Add multiple members to Circle
-     * @param users Array of users
-     */
-    addMembers(users: Array<UserBase>) {
-        users.forEach((user: UserBase) => {
-            console.log(user);
-            
-            this._members.push(user);
-        });
+    addRoute(route: Route) {
+        this._routes.push(route);
     }
 
     removeMember(user: UserBase) {

@@ -60,8 +60,6 @@ export class UserBase {
         }
         return null;
     }
-
-
 }
 
 export enum UserStatus {

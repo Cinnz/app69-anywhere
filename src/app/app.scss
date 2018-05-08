@@ -1,3 +1,4 @@
+@import "../theme/aw-icons";
 .a1-container {
     position: relative;
     width: 100%;
@@ -631,60 +632,83 @@ $font-color: #464646;
     font-weight: bold;
 }
 
+ion-content {
+    color: #464646 !important;
+}
+
 .aw-menu {
     .menu-header {
-        padding: 10px;
-        box-shadow: 0px 2px 5px 0px lightgrey;
+        padding: 30px;
+        border-bottom: 1px solid #F1F1F1;
+        margin: 0 20px;
         .menu-avatar {
-            width: 3em;
-            height: 3em;
+            width: 10rem;
+            height: 10rem;
+            margin-bottom: 10px;
             img {
                 border-radius: 50%;
+                border: 1px solid #BEBEBE;
             }
         }
         .menu-username {
-            font-size: 1.2em;
-            padding-left: 10px;
-            width: 70%;
+            font-size: 1.4em;
+            width: 100%;
+            text-align: center;
         }
     }
     .menu-circle-container {
-        padding-top: 32px;
+        padding: 16px 0 0 20px;
         .title {
             color: gray;
-            padding: 0 10px 10px 10px;
+            padding: 0 10px 10px 0;
         }
         .circles {
             .circle {
-                padding: 16px;
+                padding: 10px 10px 10px 24px;
             }
             .circle-actived {
-                background-color: lightgray;
-                border-left: 4px solid gray;
+                background-color: #FF9CC0;
+                color: white;
+                border-top-left-radius: 20px;
+                border-bottom-left-radius: 21px;
             }
         }
         .buttons-container {
-            padding: 10px;
-            .button {
-                padding: 10px;
-                border: 1px solid gray;
+            padding-bottom: 16px;
+            margin-right: 20px;
+            border-bottom: 1px solid #f1f1f1;
+            .button-new {
+                .btn-icon {
+                    margin-right: 4px;
+                }
+                padding: 10px 10px 10px 24px;
                 border-radius: 20px;
-                width: 40%;
-                margin: 0 10px;
-                font-size: .8em;
+                width: 100%;
+                background-color: #F4F4F4;
+                color: #8D8D8D;
             }
         }
     }
     .menu-function-container {
-        padding-top: 32px;
+        padding: 20px;
         .title {
             color: gray;
-            padding: 0 10px 10px 10px;
+            padding: 0 10px 10px 0;
         }
         .menu-function {
-            padding: 10px 16px;
+            padding: 6px;
             font-size: .9em;
         }
+    }
+}
+
+.aw-menu-footer {
+    .toolbar-background {
+        background-color: #47B1FF;
+    }
+    .footer-title {
+        color: white !important;
+        text-align: center;
     }
 }
 
@@ -756,4 +780,10 @@ $font-color: #464646;
     background-color: #02B2FF;
     color: white;
     border: none;
+}
+
+.action-sheet-ios .action-sheet-button {
+    padding: 16px !important;
+    min-height: 3em !important;
+    font-size: 1.6rem !important;
 }

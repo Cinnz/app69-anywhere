@@ -37,6 +37,19 @@ page-aw-login {
                     }
                 }
                 .save-password {
+                    .save-checkbox {
+                        width: 2rem;
+                        height: 2rem;
+                        border-radius: 50%;
+                        border: 1px solid #D6D6D6;
+                        text-align: right;
+                        ion-icon {
+                            margin-right: -1px;
+                            color: #F34E88;
+                            font-size: .8em;
+                            width: 100%;
+                        }
+                    }
                     .text {
                         margin-left: 10px;
                         font-size: .8em;

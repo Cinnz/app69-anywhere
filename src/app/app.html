@@ -1,11 +1,11 @@
 <ion-menu type="overlay" [content]="content">
-    <ion-content class="aw-menu">
-        <div class="menu-header a3-container">
+    <ion-content no-bounce class="aw-menu">
+        <div class="menu-header a3-container a3-column a3-items-center">
             <div class="menu-avatar">
                 <img [src]="menuDatas.avatar">
             </div>
             <div class="menu-username a3-container a3-items-center">
-                <span class="a1-text-ellipsis">{{menuDatas.username}}</span>
+                <span class="a1-text-ellipsis a1-width-100">{{menuDatas.username}}</span>
             </div>
         </div>
         <div class="menu-circle-container">
@@ -17,12 +17,12 @@
                     <span>{{circle.name}}</span>
                 </div>
             </div>
-            <div class="buttons-container a3-container a3-justify-center">
-                <div class="button" (click)="onClickAddCircle()">
+            <div class="buttons-container">
+                <div class="button-new" (click)="onClickAddCircle()">
+                    <span class="btn-icon">
+                        <ion-icon name="ios-add-outline"></ion-icon>
+                    </span>
                     <span>{{menuTexts.new}}</span>
-                </div>
-                <div class="button">
-                    <span>{{menuTexts.join}}</span>
                 </div>
             </div>
         </div>
@@ -35,6 +35,12 @@
             </div>
         </div>
     </ion-content>
+
+    <ion-footer>
+        <ion-toolbar class="aw-menu-footer">
+            <div class="footer-title">{{ menuTexts.join | uppercase }}</div>
+        </ion-toolbar>
+    </ion-footer>
 </ion-menu>
 
 <ion-nav [root]="rootPage" #content></ion-nav>

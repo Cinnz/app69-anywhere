@@ -8,9 +8,13 @@ import {
   ILatLng
 } from '@ionic-native/google-maps';
 
+import { CircleController } from '../aw-controller/circle-controller';
+
 
 @Injectable()
 export class AwModule {
+
+  private _mCircleController = new CircleController()
 
   constructor() {
   }
@@ -55,8 +59,16 @@ export class AwModule {
     });
   }
 
-  createNewCircle(circleName: string){
+  createNewCircle(circleName: string) {
     // let newCircle = new Circle()
+  }
+
+  getTrace(userId: string, date: Date) {
+
+  }
+
+  getCircle(circleId: string){
+    return this._mCircleController.getCircle(circleId);
   }
 
 }

@@ -48,6 +48,12 @@ export class AwCreateLocationPage {
     });
   }
 
+  ionViewDidLeave(){
+    if(this.map){
+      this.map.remove();
+    }
+  }
+
   loadMap() {
     if (!this.map) {
       let mapElement = document.getElementById("map");

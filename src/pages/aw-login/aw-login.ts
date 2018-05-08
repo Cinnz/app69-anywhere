@@ -18,7 +18,8 @@ export class AwLoginPage {
 
   mDatas = {
     username: "",
-    password: ""
+    password: "",
+    isSavingPassword: false
   }
 
   constructor(public navCtrl: NavController,
@@ -27,6 +28,10 @@ export class AwLoginPage {
 
   onClickSignUp() {
     this.navCtrl.push("AwSignupPage", null, { animation: 'ios-transition' });
+  }
+
+  onClickSavePassword(){
+    this.mDatas.isSavingPassword = ! this.mDatas.isSavingPassword;
   }
 
 }

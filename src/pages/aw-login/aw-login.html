@@ -11,8 +11,10 @@
                     <input type="text" placeholder={{mTexts.username}} [(ngModel)]="mDatas.username">
                     <input type="password" placeholder={{mTexts.password}} [(ngModel)]="mDatas.password">
                 </div>
-                <div class="save-password a1-margin-bottom a3-container a3-items-center a3-justify-end">
-                    <ion-checkbox></ion-checkbox>
+                <div class="save-password a1-margin-bottom a3-container a3-items-center a3-justify-end" (click)="onClickSavePassword()">
+                    <div class="save-checkbox">
+                        <ion-icon *ngIf="mDatas.isSavingPassword" name="aw-done-check"></ion-icon>
+                    </div>
                     <div class="text ">{{mTexts.savePassword}}</div>
                 </div>
                 <div class="blue-btn" style="margin-top: 24px">

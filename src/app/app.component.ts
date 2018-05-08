@@ -16,7 +16,7 @@ export class MyApp {
     circle: "Vòng kết nối",
     function: "Chức năng",
     new: "Thêm mới",
-    join: "Tham gia",
+    join: "Tham gia vòng kết nối mới",
   }
 
   menuDatas = {
@@ -24,10 +24,10 @@ export class MyApp {
     avatar: "./assets/imgs/logo.png",
     circles: [{
       id: 1,
-      name: "Vòng kết nối 1"
+      name: "Bạn bè"
     }, {
       id: 2,
-      name: "Vòng kết nối 2"
+      name: "Gia đình"
     }],
     currentCircleId: 1,
     functions: [{
