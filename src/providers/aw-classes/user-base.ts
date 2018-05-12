@@ -6,11 +6,11 @@ import { Trace } from './trace';
  */
 export class UserBase {
 
-    location: Location;
+    private _location: Location;
     private _traces: Array<Trace> = [];
     private _status: UserStatus = UserStatus.OFFLINE;
 
-    constructor(private _id: string, private _name: string, private _avatar: string, private _isPublic: boolean) {
+    constructor(private _id: string, private _name: string, private _avatar: string) {
 
     }
 
@@ -26,40 +26,18 @@ export class UserBase {
         return this._avatar;
     }
 
-    get isPublic() {
-        return this._isPublic;
-    }
-
-    get time(){
-        return this.location.time;
-    }
-
-    get address(){
-        return this.location.address;
+    get location(){
+        return this._location;
     }
     
     updateLocation(location: Location) {
-        this.location = location;
-    }
-
-    updatePublicStatus(status: boolean){
-        this._isPublic = status;
+        this._location = location;
     }
 
     addTrace(trace: Trace) {
         this._traces.push(trace);
     }
 
-    getTraceById(traceId: string){
-        for(let i = 0; i < this._traces.length; i++){
-            let trace = this._traces[i];
-
-            if(trace.id == traceId){
-                return trace;
-            }
-        }
-        return null;
-    }
 }
 
 export enum UserStatus {

@@ -1,15 +1,11 @@
+import { Location } from './location';
+import { Member } from './member';
 import { Route } from './route';
 import { UserBase } from './user-base';
 
-/**
- * Vòng tròn kết nối
- */
-export class Circle {
+export class CircleBase {
 
-    private _members: Array<UserBase> = [];
-    private _routes: Array<Route> = [];
-
-    constructor(private _id: string, private _name: string, private _adminId: string) {
+    constructor(private _id: string, private _name: string, private _adminId) {
 
     }
 
@@ -29,6 +25,19 @@ export class Circle {
         return this._adminId;
     }
 
+    updateAdmin(adminId: string) {
+        this._adminId = adminId;
+    }
+}
+
+/**
+ * Vòng tròn kết nối
+ */
+export class Circle extends CircleBase {
+
+    private _members: Array<Member> = [];
+    private _routes: Array<Route> = [];
+
     get members() {
         return this._members;
     }
@@ -37,8 +46,14 @@ export class Circle {
         return this._routes;
     }
 
-    onResponseData(members: Array<UserBase>, routes: Array<Route>) {
-        members.forEach(member => {
+    onResponseData(members, routes) {
+        members.forEach(m => {
+            let member = new Member(m.id, m.name, m.avatar, m.isPublic);
+
+            if (m.location) {
+                let location = new Location(m.location.address, m.location.lat, m.location.lng, m.location.time);
+                member.updateLocation(location);
+            }
             this.addMember(member);
         });
 
@@ -47,15 +62,12 @@ export class Circle {
         })
     }
 
-    updateAdmin(adminId: string) {
-        this._adminId = adminId;
-    }
 
     /**
      * Add a member to Circle
      * @param user User
      */
-    addMember(user: UserBase) {
+    addMember(user: Member) {
         this._members.push(user);
     }
 
@@ -63,7 +75,7 @@ export class Circle {
         this._routes.push(route);
     }
 
-    removeMember(user: UserBase) {
+    removeMember(user: Member) {
         let index = this._members.indexOf(user);
 
         this._members.splice(index, 1);

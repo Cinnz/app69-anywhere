@@ -5,7 +5,7 @@
             <button ion-button *ngIf="!mDatas.isOnDetail" class="menu-icon" (click)="onClickMenu()">
               <ion-icon name="aw-menu"></ion-icon>
             </button>
-            <button ion-button *ngIf="mDatas.isOnDetail" (click)="onClickClose()">
+            <button ion-button *ngIf="mDatas.isOnDetail" (click)="onClickCloseViewDetail()">
               <ion-icon name="ios-arrow-back-outline"></ion-icon>
             </button>
         </ion-buttons>
@@ -37,7 +37,7 @@
         <div class="rest a3-flex-1">
             <div class="item-container" *ngIf="!mDatas.isOnDetail">
                 <ion-grid no-padding>
-                    <ion-row class="item a3-container" *ngFor="let member of mDatas.circleMembers" (click)="onClickMember(member)">
+                    <ion-row class="item a3-container" *ngFor="let member of mDatas.circleMembers" (click)="onClickMemberPosition(member)">
                         <ion-col col-2 class="avatar-container">
                             <img [src]="member.avatar">
                             <div class="status offline" [class.online]="member.isPublic"></div>
@@ -48,18 +48,47 @@
                                     {{ member.name }}
                                 </ion-col>
                                 <ion-col col-3 class="time">
-                                    {{ member.time | date:'shortTime' }}
+                                    {{ member.location?.time | date:'shortTime' }}
                                 </ion-col>
                             </ion-row>
                             <ion-row>
-                                <div class="location">{{ member.address }}</div>
+                                <div class="location">{{ member.location?.address }}</div>
                             </ion-row>
                         </ion-col>
                     </ion-row>
                 </ion-grid>
             </div>
             <div class="route-container" *ngIf="mDatas.isOnDetail">
-
+                <div *ngIf="mDatas.memberDetail.isPublic">
+                    <ion-grid no-padding>
+                        <ion-row class="step" *ngFor="let step of mDatas.currentTrace; first as f; last as l">
+                            <ion-col col-2 class="icon-container a1-relative">
+                                <div class="route-connect-container a3-container-center" *ngIf="!f">
+                                    <div class="route-connect"></div>
+                                </div>
+                                <div>
+                                    <ion-icon class="icon-point" [class.point]="!(f||l)" [name]="(f||l)?'aw-route-start':'aw-route-point'"></ion-icon>
+                                </div>
+                            </ion-col>
+                            <ion-col col-10 class="info-container a3-container a3-column a3-justify-center" (click)="onClickStep(step)">
+                                <ion-row>
+                                    <ion-col class="title">
+                                        {{ step.title }}
+                                    </ion-col>
+                                    <ion-col col-3 class="time">
+                                        {{ step.time | date:'shortTime' }}
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <div class="location">{{ step.address }}</div>
+                                </ion-row>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </div>
+                <div class="notice a3-container-center a1-fill-parent" *ngIf="!mDatas.memberDetail.isPublic">
+                    <div>{{ mTexts.notPublic }}</div>
+                </div>
             </div>
             <div class="btn-chat-container a3-container-center">
                 <div class="chat-btn blue-btn" *ngIf="!mDatas.isOnDetail">
@@ -69,11 +98,13 @@
                     <span class="title">{{ mTexts.chatButton | uppercase }}</span>
                     <span class="msg-number a3-container-center">{{ mDatas.circleNewMessages }}</span>
                 </div>
-                <div class="date-picker-btn a3-container-center" *ngIf="mDatas.isOnDetail">
-                    <span class="title">{{mTexts.pickDate | uppercase}}</span>
+                <div class="date-picker-btn a3-container-center" *ngIf="mDatas.isOnDetail" (click)="onClickDatePicker()">
+                    <span class="title">{{ mDatas.currentDateView | date:'mediumDate' }}</span>
                 </div>
             </div>
         </div>
     </div>
 
 </ion-content>
+
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>

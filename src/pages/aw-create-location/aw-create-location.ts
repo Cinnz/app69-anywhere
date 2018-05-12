@@ -22,7 +22,8 @@ export class AwCreateLocationPage {
   mTexts = {
     title: "Chọn vị trí nhà bạn",
     search: "Tìm kiếm",
-    next: "Tiếp theo"
+    next: "Tiếp theo",
+    addStepTitle: "Chọn"
   }
 
   mDatas = {
@@ -42,14 +43,13 @@ export class AwCreateLocationPage {
   ionViewDidEnter() {
     this.mPlatform.ready().then(() => {
       if (this.mPlatform.is('android') || this.mPlatform.is('ios')) {
-        // this.loadMap();
+        this.loadMap();
       }
-
     });
   }
 
-  ionViewDidLeave(){
-    if(this.map){
+  ionViewDidLeave() {
+    if (this.map) {
       this.map.remove();
     }
   }
@@ -65,7 +65,7 @@ export class AwCreateLocationPage {
           controls: {
             compass: true,
             myLocation: true,
-            myLocationButton: true,
+            myLocationButton: false,
             indoorPicker: false,
             mapToolbar: false,
             zoom: false
@@ -150,4 +150,16 @@ export class AwCreateLocationPage {
     modal.present();
   }
 
+  moveToMe() {
+    LocationService.getMyLocation({ enableHighAccuracy: true }).then(location => {
+      this.map.animateCamera({
+        target: location.latLng,
+        duration: 200
+      });
+    });
+  }
+
+  onClickMyLocation() {
+    this.moveToMe();
+  }
 }

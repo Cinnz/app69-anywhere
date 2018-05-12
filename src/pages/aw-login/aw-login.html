@@ -17,7 +17,7 @@
                     </div>
                     <div class="text ">{{mTexts.savePassword}}</div>
                 </div>
-                <div class="blue-btn" style="margin-top: 24px">
+                <div class="blue-btn" style="margin-top: 24px" (click)="onClickLogin()">
                     <span>{{mTexts.logIn | uppercase}}</span>
                 </div>
                 <div class="white-btn a1-margin-top" (click)="onClickSignUp()">
@@ -28,3 +28,5 @@
     </div>
 
 </ion-content>
+
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>

@@ -10,6 +10,8 @@ import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { AwModule } from '../providers/aw-module/aw-module';
 import { CircleController } from '../providers/aw-controller/circle-controller';
+import { UserController } from '../providers/aw-controller/user-controller';
+import { TraceController } from '../providers/aw-controller/trace-controller';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,9 @@ import { CircleController } from '../providers/aw-controller/circle-controller';
     GoogleMaps,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     AwModule,
-    CircleController
+    CircleController,
+    UserController,
+    TraceController
   ]
 })
 export class AppModule { }

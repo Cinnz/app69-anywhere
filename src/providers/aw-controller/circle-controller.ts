@@ -26,13 +26,14 @@ export class CircleController {
                 }
             }
 
-            this.getCircleData(circleId).subscribe(data => {
+            this.requestCircleData(circleId).subscribe(data => {
                 let circle = new Circle(data.id, data.name, data.adminId);
-                
+
                 circle.onResponseData(data.members, data.routes);
                 this.addCircle(circle);
+
+                res(circle);
             });
-            res();
         });
     }
 
@@ -40,25 +41,27 @@ export class CircleController {
      * lấy thông tin chi tiết của Circle từ server
      * @param circleId 
      */
-    private getCircleData(circleId: string): Observable<any> {
+    private requestCircleData(circleId: string): Observable<any> {
         return new Observable((observer) => {
             setTimeout(() => {
                 observer.next({
                     id: circleId,
-                    name: "Bạn bè",
-                    adminId: "123456",
+                    name: circleId == "c0001" ? "Bạn bè" : "Gia đình",
+                    adminId: circleId == "c0001" ? "u00001" : "u00002",
                     members: [
                         {
                             id: "u0001",
                             name: "mr A",
                             avatar: "./assets/imgs/logo.png",
-                            isPublic: true
+                            isPublic: true,
+                            location: { time: 1525419420000, address: "1 Đại Cồ Việt, Bách Khoa, Hai Bà Trưng, Hà Nội", lat: 21.007085, lng: 105.842882 }
                         },
                         {
                             id: "u0002",
                             name: "Nguyễn Văn B",
                             avatar: "./assets/imgs/logo.png",
-                            isPublic: false
+                            isPublic: false,
+                            location: { time: 1525448220000, address: "122 Bạch Mai, Hai Bà Trưng, Hà Nội", lat: 21.006065, lng: 105.851191 }
                         },
                         {
                             id: "u0003",
@@ -70,13 +73,15 @@ export class CircleController {
                             id: "u0004",
                             name: "Lê Văn D",
                             avatar: "./assets/imgs/logo.png",
-                            isPublic: true
+                            isPublic: true,
+                            location: { time: 1525448220000, address: "147 Phố Huế, Hai Bà Trưng, Hà Nội", lat: 21.014425, lng: 105.851760 }
                         },
                         {
                             id: "u0005",
                             name: "Dương Tùng E",
                             avatar: "./assets/imgs/logo.png",
-                            isPublic: false
+                            isPublic: false,
+                            location: { time: 1525448220000, address: "20 Ô Chợ Dừa, Đống Đa, Hà Nội", lat: 21.018991, lng: 105.828955 }
                         },
                     ],
                     routes: []
@@ -84,5 +89,4 @@ export class CircleController {
             }, 1000);
         });
     }
-
 }

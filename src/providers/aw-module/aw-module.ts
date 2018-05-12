@@ -1,5 +1,7 @@
+import { TraceController } from './../aw-controller/trace-controller';
+import { Events } from 'ionic-angular';
 import { User } from './../aw-classes/user';
-import { Circle } from './../aw-classes/circle';
+import { Circle, CircleBase } from './../aw-classes/circle';
 import { Injectable } from '@angular/core';
 
 import {
@@ -9,14 +11,52 @@ import {
 } from '@ionic-native/google-maps';
 
 import { CircleController } from '../aw-controller/circle-controller';
+import { Member } from '../aw-classes/member';
 
 
 @Injectable()
 export class AwModule {
 
-  private _mCircleController = new CircleController()
+  private _mUser: User = new User("", "", "");
 
-  constructor() {
+  private _mCircleController = new CircleController()
+  private _mTraceController = new TraceController();
+
+  constructor(private mEvents: Events) {
+  }
+
+  get user() {
+    return this._mUser;
+  }
+
+  login(username: string, password: string) {
+    console.log("on Login: ", username + " - " + password);
+
+    // request Login
+
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        this._mUser = new User("u00001", "Hoài Nam", "./assets/imgs/logo.png");
+
+        let circle1 = new CircleBase("c0001", "Bạn bè", "u00001");
+        let circle2 = new CircleBase("c0002", "Gia đình", "u00002");
+
+        this._mUser.addCircle(circle1);
+        this._mUser.addCircle(circle2);
+
+        // Publish event update user's info to update data in Menu
+        this.mEvents.publish("user: changed", this._mUser)
+        res();
+      }, 1000);
+    });
+  }
+
+  onFirstTime() {
+    console.log("ON FIRST TIME");
+    
+    if (this._mUser.circles.length > 0) {
+      this.mEvents.publish("circle: changed", this._mUser.circles[0].id)
+    }
   }
 
   requestAddress(location: ILatLng) {
@@ -63,12 +103,14 @@ export class AwModule {
     // let newCircle = new Circle()
   }
 
-  getTrace(userId: string, date: Date) {
-
+  getUserTraces(userId: string, date: string) {
+    return this._mTraceController.getTraceByDate(userId, date);
   }
 
-  getCircle(circleId: string){
+  getCircleById(circleId: string) {
     return this._mCircleController.getCircle(circleId);
   }
+
+
 
 }
