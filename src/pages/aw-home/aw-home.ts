@@ -230,7 +230,7 @@ export class AwHomePage {
   }
 
   showRouteOnMap(steps: Array<Location>, withStep: boolean) {
-    let latLngs = this.stepsToLatLngs(steps);
+    let latLngs = Utils.latLngsFromSteps(steps);
     let polylineOptions: PolylineOptions = {
       points: latLngs,
       color: "#20ACFF",
@@ -353,31 +353,12 @@ export class AwHomePage {
 
         this.showRouteOnMap(this.mDatas.currentTrace, true);
 
-        this.animateCameraTo(this.mDatas.currentTrace[0].latLng, 1000);
+        Utils.animateCameraTo(this.map, this.mDatas.currentTrace[0].latLng, 1000);
         this.hideLoading();
       });
     }
   }
 
-  animateCameraTo(latLng: LatLng, duration: number) {
-    if (this.map) {
-      let cameraPosition: CameraPosition<ILatLng> = {
-        target: latLng,
-        duration: duration
-      }
-      this.map.animateCamera(cameraPosition);
-    }
-  }
-
-  stepsToLatLngs(steps: Array<Location>) {
-    let latLngs: Array<LatLng> = [];
-
-    steps.forEach(step => {
-      latLngs.push(step.latLng);
-    });
-
-    return latLngs;
-  }
 
   onClickMenu() {
     this.mMenuController.open();
@@ -448,7 +429,7 @@ export class AwHomePage {
 
   onClickMemberPosition(member: Member) {
     if (this.map && member.location) {
-      this.animateCameraTo(member.location.latLng, 1000);
+      Utils.animateCameraTo(this.map, member.location.latLng, 1000);
     }
   }
 
@@ -467,7 +448,6 @@ export class AwHomePage {
   }
 
   onClickStep(step: Location) {
-    console.log(step);
-    this.animateCameraTo(step.latLng, 1000);
+    Utils.animateCameraTo(this.map, step.latLng, 1000);
   }
 }

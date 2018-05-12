@@ -22,8 +22,9 @@ page-aw-walkthrough {
         }
         .next-btn {
             position: absolute;
-            bottom: 16px;
-            right: 16px;
+            bottom: 0;
+            right: 0;
+            padding: 16px;
             color: white;
         }
     }

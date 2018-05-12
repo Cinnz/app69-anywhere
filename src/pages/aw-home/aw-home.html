@@ -23,7 +23,7 @@
 
     <div class="main-content a1-fill-parent a3-container a3-column">
         <div id="map">
-            <div #members class="members-background hidden-members">
+            <div #members class="members-background hidden-members hidden">
                 <div class="members-container a3-container-inline">
                     <div class="member a3-container a3-column a3-items-center" *ngFor="let member of mDatas.circleMembers" (click)="onClickChangeMemberDetail(member)">
                         <div class="avatar" [class.is-actived]="member==mDatas.memberDetail">
