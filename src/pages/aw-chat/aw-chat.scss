@@ -1,0 +1,68 @@
+page-aw-chat {
+    .m-header {
+        border-bottom: 1px solid #D6D6D6;
+        ion-toolbar {
+            .toolbar-background {
+                border: none;
+            }
+            .menu-icon {
+                font-size: 1.2rem;
+            }
+        }
+    }
+    ion-content {
+        background-color: #F8F8F8 !important;
+    }
+    .messages-container {
+        width: 100%;
+        padding: 10px 24px 10px 10px;
+        .message {
+            .avatar-container {
+                width: 10vw;
+                height: 10vw;
+                overflow: hidden;
+                margin-bottom: 2px;
+                margin-right: 10px;
+                img {
+                    border: 1px solid #BEBEBE;
+                    border-radius: 50%;
+                }
+            }
+            .message-detail {
+                max-width: 72vw;
+                .name {
+                    color: #8E8E93;
+                    font-size: .8em;
+                    margin-bottom: 4px;
+                }
+                .message-content {
+                    color: white;
+                    padding: 10px 14px;
+                    border-radius: 20px;
+                    background-color: #FF9CC0;
+                    margin-bottom: 12px;
+                }
+            }
+        }
+        .my-message {
+            .message-content {
+                background-color: #61D5FE !important;
+            }
+        }
+    }
+    .chat-input-container {
+        background-color: white;
+        padding: 10px;
+        border-top: 1px solid #D6D6D6;
+        .input-icons {
+            color: #47B1FF;
+        }
+        .msg-input {
+            padding: 0 10px;
+            input {
+                border: none;
+                caret-color: #4168e3;
+            }
+        }
+    }
+}

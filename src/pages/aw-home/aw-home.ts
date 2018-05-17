@@ -188,9 +188,18 @@ export class AwHomePage {
             building: false,
           }
         }
-        this.map = GoogleMaps.create(mapElement, mapOption);
 
-        this.showMembersOnMap();
+        this.map = GoogleMaps.create(mapElement, mapOption);
+        this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+          console.log("map is ready.");
+          this.showMembersOnMap();
+        }).catch(e => {
+          console.log("map is not ready", e);
+        });
+
+
+      }).catch(e => {
+        console.log("error cmnr", e);
       });
     }
   }
@@ -198,7 +207,7 @@ export class AwHomePage {
   showMembersOnMap() {
     if (this.map) {
       this.mDatas.circleMembers.forEach((member: Member) => {
-        if (member.marker) {
+        if (member.marker && !member.marker.isVisible()) {
           member.marker.setVisible(true);
         }
         else {
@@ -222,8 +231,8 @@ export class AwHomePage {
   }
 
   hideMembersOnMap() {
-    this.mDatas.circleMembers.forEach(member => {
-      if (member.marker) {
+    this.mDatas.circleMembers.forEach((member: Member) => {
+      if (member.marker && member.marker.isVisible()) {
         member.marker.setVisible(false);
       }
     });
@@ -269,7 +278,7 @@ export class AwHomePage {
 
     if (this.mDatas.currentSteps.length > 0) {
       this.mDatas.currentSteps.forEach(step => {
-        step.setVisible(false);
+        step.remove();
       });
       this.mDatas.currentSteps = [];
     }
@@ -417,6 +426,7 @@ export class AwHomePage {
       this.getMemberTrace(this.mDatas.memberDetail);
     }
     this.showMembersBar();
+    this.hideMembersOnMap();
     this.onChangePageView();
     this.mMenuController.enable(false);
   }
@@ -435,7 +445,7 @@ export class AwHomePage {
 
   onClickTitle() {
     console.log(this.imageToBase64("./assets/imgs/logo.png"));
-
+    this.hideMembersOnMap();
   }
 
   onClickChangeMemberDetail(member: Member) {
@@ -449,5 +459,9 @@ export class AwHomePage {
 
   onClickStep(step: Location) {
     Utils.animateCameraTo(this.map, step.latLng, 1000);
+  }
+
+  onClickChat() {
+    this.navCtrl.push("AwChatPage", { circleId: this.mDatas.circleId });
   }
 }

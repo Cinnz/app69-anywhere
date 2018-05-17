@@ -1,6 +1,6 @@
 <ion-menu type="overlay" [content]="content">
     <ion-content no-bounce class="aw-menu">
-        <div class="menu-header a3-container a3-column a3-items-center">
+        <div class="menu-header a3-container a3-column a3-items-center" (click)="onClickUserInfo()">
             <div class="menu-avatar">
                 <img [src]="menuDatas.avatar">
             </div>
@@ -37,7 +37,7 @@
     </ion-content>
 
     <ion-footer>
-        <ion-toolbar class="aw-menu-footer">
+        <ion-toolbar class="aw-menu-footer" (click)="onClickJoinCircle()">
             <div class="footer-title">{{ menuTexts.join | uppercase }}</div>
         </ion-toolbar>
     </ion-footer>

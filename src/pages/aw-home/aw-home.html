@@ -91,7 +91,7 @@
                 </div>
             </div>
             <div class="btn-chat-container a3-container-center">
-                <div class="chat-btn blue-btn" *ngIf="!mDatas.isOnDetail">
+                <div class="chat-btn blue-btn" *ngIf="!mDatas.isOnDetail" (click)="onClickChat()">
                     <span>
                         <ion-icon name="aw-chat"></ion-icon>
                     </span>

@@ -1,3 +1,5 @@
+import { Keyboard } from '@ionic-native/keyboard';
+import { Network } from '@ionic-native/network';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
@@ -12,6 +14,9 @@ import { AwModule } from '../providers/aw-module/aw-module';
 import { CircleController } from '../providers/aw-controller/circle-controller';
 import { UserController } from '../providers/aw-controller/user-controller';
 import { TraceController } from '../providers/aw-controller/trace-controller';
+import { SfsModuleProvider } from '../providers/sfs-module/sfs-module';
+import { ChatController } from '../providers/aw-controller/chat-controller';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -20,7 +25,8 @@ import { TraceController } from '../providers/aw-controller/trace-controller';
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    FormsModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -35,7 +41,11 @@ import { TraceController } from '../providers/aw-controller/trace-controller';
     AwModule,
     CircleController,
     UserController,
-    TraceController
+    TraceController,
+    SfsModuleProvider,
+    Network,
+    ChatController,
+    Keyboard
   ]
 })
 export class AppModule { }

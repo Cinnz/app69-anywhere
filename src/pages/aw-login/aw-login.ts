@@ -1,6 +1,8 @@
+import { AccountValidators } from './../../validators/account.validators';
 import { AwModule } from './../../providers/aw-module/aw-module';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, ToastController, MenuController } from 'ionic-angular';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 @IonicPage()
 @Component({
@@ -10,23 +12,43 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 export class AwLoginPage {
 
   mTexts = {
-    username: "Tên đăng nhập",
+    phonenumber: "Số điện thoại",
     password: "Mật khẩu",
     savePassword: "Ghi nhớ mật khẩu",
     logIn: "Đăng nhập",
     signUp: "Tạo tài khoản"
-  }
+  };
 
   mDatas = {
-    username: "",
-    password: "",
     isSavingPassword: false,
-    onLoading: false
-  }
+    onLoading: false,
+    minPassword: 6
+  };
+
+  form = new FormGroup({
+    phonenumber: new FormControl('', [
+      Validators.required,
+      AccountValidators.isValidPhoneNumber
+    ]),
+    password: new FormControl("", [Validators.required, Validators.minLength(this.mDatas.minPassword)])
+  });
 
   constructor(public navCtrl: NavController,
     private mAwModule: AwModule,
-    public navParams: NavParams) {
+    private mToastController: ToastController,
+    private mMenuController: MenuController) {
+  }
+
+  ionViewDidLoad() {
+    this.mMenuController.enable(false);
+  }
+
+  get phonenumber() {
+    return this.form.get('phonenumber');
+  }
+
+  get password() {
+    return this.form.get('password');
   }
 
   showLoading() {
@@ -35,6 +57,15 @@ export class AwLoginPage {
 
   hideLoading() {
     this.mDatas.onLoading = false;
+  }
+
+  showToast(message: string, duration?: number) {
+    let toast = this.mToastController.create({
+      message: message,
+      duration: duration ? duration : 2000
+    });
+
+    toast.present();
   }
 
   onClickSignUp() {
@@ -46,11 +77,35 @@ export class AwLoginPage {
   }
 
   onClickLogin() {
-    this.showLoading();
-    this.mAwModule.login(this.mDatas.username, this.mDatas.password).then(() => {
-      this.hideLoading();
-      this.navCtrl.setRoot("AwHomePage")
-    });
-  }
+    if (this.form.valid) {
+      this.showLoading();
 
+      let phonenumber = "0" + this.form.value.phonenumber;
+      let password = this.form.value.password;
+
+      this.mAwModule.login(phonenumber, password).then((data) => {
+        this.hideLoading();
+
+        if (data['success']) {
+          this.navCtrl.setRoot("AwHomePage");
+        }
+        else {
+          if (data['msg']) {
+            this.showToast(data['msg'])
+          }
+        }
+      }).catch(e => {
+        this.hideLoading();
+        this.showToast("Vui lòng kiểm tra kết nối mạng")
+      });
+    }
+    else {
+      if (this.phonenumber.errors) {
+        this.showToast("Số điện thoại không hợp lệ");
+      }
+      else if (this.password.errors) {
+        this.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự");
+      }
+    }
+  }
 }

@@ -12,7 +12,7 @@ import { HomePage } from '../pages/home/home';
 })
 export class MyApp {
   rootPage: any = "AwLoadingPage";
-  // rootPage: any = "AwCreateRoutePage";
+  // rootPage: any = "AwChatPage";
 
   menuTexts = {
     circle: "Vòng kết nối",
@@ -79,6 +79,11 @@ export class MyApp {
     this.menu.close();
   }
 
+  private onClickUserInfo(){
+    this.app.getRootNav().push("AwUserInfoPage");
+    this.menu.close();
+  }
+
   private onClickCircle(circle) {
     if (this.menuDatas.currentCircleId != circle.id) {
       this.menuDatas.currentCircleId = circle.id;
@@ -89,6 +94,11 @@ export class MyApp {
 
   private onClickAddCircle() {
     this.app.getRootNav().push("AwCreateCirclePage", { isSignUp: false });
+    this.menu.close();
+  }
+
+  private onClickJoinCircle(){
+    this.app.getRootNav().push("AwJoinCirclePage");
     this.menu.close();
   }
 }

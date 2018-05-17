@@ -714,6 +714,12 @@ ion-content {
 
 .aw-header {
     color: $font-color;
+    .toolbar-title {
+        font-size: 1em;
+    }
+    .toolbar-background {
+        background-color: white !important;
+    }
 }
 
 .blue-btn {
