@@ -22,16 +22,16 @@
     </div>
     <div class="user-info a3-container a3-column a3-items-center">
         <div class="username">{{ mDatas.user?.name }}</div>
-        <div class="address">{{ mDatas.user?.home.address }}</div>
+        <div class="address">{{ mDatas.user?.home?.address }}</div>
         <div class="rest a3-flex-1 a3-container a3-items-center">
             <div class="buttons-container a3-container">
-                <div>
+                <div (click)="onClickGetCode()">
                     <div class="btn btn-getcode a3-container-center">
                         <ion-icon name="aw-connected-lines"></ion-icon>
                     </div>
                     <div class="text-btn">{{ mTexts.getCode }}</div>
                 </div>
-                <div>
+                <div (click)="onClickLogOut()">
                     <div class="btn btn-logout a3-container-center">
                         <ion-icon name="aw-power"></ion-icon>
                     </div>
@@ -42,3 +42,21 @@
     </div>
 
 </ion-content>
+
+<div id="backdrop" *ngIf="mDatas.isShowCodes" class="a3-container-center" (click)="onClickBackdrop()">
+    <div id="code-container" (click)="onClickContainer()">
+        <div class="static-code a3-container a3-justify-center">
+            <div class="code" (click)="onClickStaticCode()">
+                {{ staticCode }}
+            </div>
+        </div>
+        <div class="dynamic-code a3-container">
+            <div class="icon-container" (click)="onClickRefreshDynamicCode()">
+                <ion-icon name="aw-refresh"></ion-icon>
+            </div>
+            <div class="code" (click)="onClickDynamicCode()">{{ mTexts.dynamicCode }} : <span bold>{{ dynamicCode }}</span></div>
+        </div>
+    </div>
+</div>
+
+<aw-loading *ngIf="mDatas.onLoading"></aw-loading>

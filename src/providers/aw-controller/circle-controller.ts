@@ -12,6 +12,10 @@ export class CircleController {
 
     }
 
+    get circles() {
+        return this._mCircles;
+    }
+
     addCircle(circle: Circle) {
         this._mCircles.push(circle);
     }
@@ -46,7 +50,7 @@ export class CircleController {
             setTimeout(() => {
                 observer.next({
                     id: circleId,
-                    name: circleId == "c0001" ? "Bạn bè" : "Gia đình",
+                    name: circleId == "c0001" ? "Bạn bè" : (circleId == "c0002" ? "Gia đình" : "Đồng Nghiệp"),
                     adminId: circleId == "c0001" ? "u00001" : "u00002",
                     members: [
                         {

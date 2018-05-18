@@ -57,6 +57,19 @@ export class AwModule {
     });
   }
 
+  // for test
+  fakeLogin() {
+    return this.login("0987654321", "123456");
+  }
+
+  logOut() {
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        res();
+      }, 1000);
+    });
+  }
+
   signUp(phonenumber: string, password: string) {
     console.log("sign up: ", phonenumber, password);
 
@@ -73,8 +86,20 @@ export class AwModule {
           // Publish event update user's info to update Menu's data
           this.mEvents.publish("user: changed", this._mUser);
 
-          res({ success: 1, msg: "Đăng ký thành công"});
+          res({ success: 1, msg: "Đăng ký thành công" });
         }
+      }, 1000);
+    });
+  }
+
+
+  getNewConnectCode() {
+    this.user.resetDynamicCode();
+
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        this.user.dynamicCode = "new" + Math.floor((Math.random() * 999) + 100);
+        res();
       }, 1000);
     });
   }
@@ -86,6 +111,8 @@ export class AwModule {
 
     this._mUser = new User("u00001", "Hoài Nam", "./assets/imgs/logo.png");
     this._mUser.home = address;
+    this._mUser.staticCode = "jqk123";
+    this._mUser.dynamicCode = "dynamic";
 
     this._mUser.addCircle(circle1);
     this._mUser.addCircle(circle2);
@@ -118,6 +145,22 @@ export class AwModule {
           console.log('we got a wifi connection, woohoo!');
         }
       }, 3000);
+    });
+  }
+
+  requestJoinCircle(code: string) {
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+
+        let circle = new CircleBase("c000" + (this._mUser.circles.length + 1), "Đồng Nghiệp", "u00002");
+
+        this._mUser.addCircle(circle);
+
+        this.mEvents.publish("circle: changed", circle.id);
+        this.mEvents.publish("circleId: changed", circle.id);
+        
+        res();
+      }, 2000);
     });
   }
 

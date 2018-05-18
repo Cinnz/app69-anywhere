@@ -59,7 +59,7 @@
                 </ion-grid>
             </div>
             <div class="route-container" *ngIf="mDatas.isOnDetail">
-                <div *ngIf="mDatas.memberDetail.isPublic">
+                <div *ngIf="mDatas.memberDetail?.isPublic">
                     <ion-grid no-padding>
                         <ion-row class="step" *ngFor="let step of mDatas.currentTrace; first as f; last as l">
                             <ion-col col-2 class="icon-container a1-relative">
@@ -86,7 +86,7 @@
                         </ion-row>
                     </ion-grid>
                 </div>
-                <div class="notice a3-container-center a1-fill-parent" *ngIf="!mDatas.memberDetail.isPublic">
+                <div class="notice a3-container-center a1-fill-parent" *ngIf="!mDatas.memberDetail?.isPublic">
                     <div>{{ mTexts.notPublic }}</div>
                 </div>
             </div>
@@ -98,8 +98,9 @@
                     <span class="title">{{ mTexts.chatButton | uppercase }}</span>
                     <span class="msg-number a3-container-center">{{ mDatas.circleNewMessages }}</span>
                 </div>
-                <div class="date-picker-btn a3-container-center" *ngIf="mDatas.isOnDetail" (click)="onClickDatePicker()">
-                    <span class="title">{{ mDatas.currentDateView | date:'mediumDate' }}</span>
+                <div no-padding class="date-picker-btn a3-container-center" *ngIf="mDatas.isOnDetail" (click)="onClickDatePicker()">
+                    <ion-datetime class="title" displayFormat="DD/MM/YYYY" [(ngModel)]="mDatas.currentDateString"></ion-datetime>
+                    <!-- <span class="title">{{ mDatas.currentDateView | date:'mediumDate' }}</span> -->
                 </div>
             </div>
         </div>

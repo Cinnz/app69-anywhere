@@ -65,4 +65,36 @@ page-aw-user-info {
             }
         }
     }
+    #backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(black, .6);
+        #code-container {
+            padding: 2em 10px 1em 10px;
+            border-radius: 20px;
+            background-color: white;
+            .static-code {
+                margin-bottom: 8px;
+                .code {
+                    background-color: #61D5FE;
+                    padding: 10px 30px;
+                    color: white;
+                    border-radius: 20px;
+                }
+            }
+            .dynamic-code {
+                .icon-container {
+                    color: #8D8D8D;
+                    padding: 16px;
+                }
+                .code {
+                    padding: 16px 16px 16px 0;
+                }
+            }
+        }
+    }
 }

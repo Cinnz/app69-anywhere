@@ -58,6 +58,7 @@ export class AwHomePage {
     memberDetail: Member,
     onLoading: boolean,
     currentDateView: Date,
+    currentDateString: string,
     currentTrace: Array<Location>,
     currentRoute: Polyline,
     currentSteps: Array<Marker>
@@ -70,6 +71,7 @@ export class AwHomePage {
       memberDetail: null,
       onLoading: false,
       currentDateView: new Date(),
+      currentDateString: (new Date(Date.now() - ((new Date()).getTimezoneOffset() * 60000))).toISOString().slice(0, -1),// ISO string local date
       currentTrace: [],
       currentRoute: null,
       currentSteps: []
@@ -102,6 +104,7 @@ export class AwHomePage {
 
   ionViewDidLoad() {
     console.log("ionViewDidLoad");
+    this.mMenuController.enable(true);
 
     // for test
     this.mAwModule.login("", "");
@@ -444,7 +447,6 @@ export class AwHomePage {
   }
 
   onClickTitle() {
-    console.log(this.imageToBase64("./assets/imgs/logo.png"));
     this.hideMembersOnMap();
   }
 

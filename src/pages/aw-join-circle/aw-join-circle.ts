@@ -1,3 +1,4 @@
+import { AwModule } from './../../providers/aw-module/aw-module';
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
@@ -20,22 +21,23 @@ export class AwJoinCirclePage {
   }
 
   mDatas: {
-    input: string;
-    elements: Array<HTMLInputElement>;
-    emptyValue: string;
+    input: string,
+    elements: Array<HTMLInputElement>,
+    emptyValue: string,
+    onLoading: boolean
   } = {
       input: "",
       elements: [],
-      emptyValue: "_"
+      emptyValue: "_",
+      onLoading: false
     }
 
   constructor(public navCtrl: NavController,
+    private mAwModule: AwModule,
     public navParams: NavParams) {
   }
 
   ionViewDidEnter() {
-    console.log("3_".match(/[^_]/)[0]);
-
     this.mDatas.elements = [this.code1, this.code2, this.code3, this.code4, this.code5];
     this.resetAll();
   }
@@ -58,17 +60,6 @@ export class AwJoinCirclePage {
 
   get code5() {
     return this._code5.nativeElement
-  }
-
-  onClickCodeContainer() {
-    for (let i = 0; i < this.mDatas.elements.length; i++) {
-      let element = this.mDatas.elements[i];
-
-      if ((element.value == this.mDatas.emptyValue) || (i == (this.mDatas.elements.length - 1))) {
-        element.focus();
-        break;
-      }
-    }
   }
 
   changed(index: number) {
@@ -99,9 +90,12 @@ export class AwJoinCirclePage {
     }
   }
 
-  onRequestJoinCircle(code: string){
-    console.log(code);
-    
+  onRequestJoinCircle(code: string) {
+    this.showLoading();
+    this.mAwModule.requestJoinCircle(code).then(() => {
+      this.hideLoading();
+      this.navCtrl.pop();
+    });
   }
 
   resetInput(element: HTMLInputElement) {
@@ -114,6 +108,29 @@ export class AwJoinCirclePage {
     this.resetInput(this.code3);
     this.resetInput(this.code4);
     this.resetInput(this.code5);
+  }
+
+  showLoading() {
+    this.mDatas.onLoading = true;
+  }
+
+  hideLoading() {
+    this.mDatas.onLoading = false;
+  }
+
+  onClickClose() {
+    this.navCtrl.pop();
+  }
+
+  onClickCodeContainer() {
+    for (let i = 0; i < this.mDatas.elements.length; i++) {
+      let element = this.mDatas.elements[i];
+
+      if ((element.value == this.mDatas.emptyValue) || (i == (this.mDatas.elements.length - 1))) {
+        element.focus();
+        break;
+      }
+    }
   }
 
 }

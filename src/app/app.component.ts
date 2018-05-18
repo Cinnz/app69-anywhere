@@ -56,13 +56,18 @@ export class MyApp {
       statusBar.styleDefault();
       splashScreen.hide();
 
+
+      mEvents.subscribe("circleId: changed", (circleId: string) => {
+        this.menuDatas.currentCircleId = circleId;
+      });
+
       // Event update user's info from AwModule
       mEvents.subscribe("user: changed", (data: User) => {
         this.menuDatas.username = data.name;
         this.menuDatas.avatar = data.avatar;
         this.menuDatas.circles = data.circles;
 
-        if(!this.menuDatas.currentCircleId){
+        if (!this.menuDatas.currentCircleId) {
           this.mEvents.publish("circle: changed", data.circles[0].id)
           this.menuDatas.currentCircleId = data.circles[0].id;
         }
@@ -79,7 +84,7 @@ export class MyApp {
     this.menu.close();
   }
 
-  private onClickUserInfo(){
+  private onClickUserInfo() {
     this.app.getRootNav().push("AwUserInfoPage");
     this.menu.close();
   }
@@ -97,7 +102,7 @@ export class MyApp {
     this.menu.close();
   }
 
-  private onClickJoinCircle(){
+  private onClickJoinCircle() {
     this.app.getRootNav().push("AwJoinCirclePage");
     this.menu.close();
   }

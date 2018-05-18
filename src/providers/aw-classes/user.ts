@@ -7,7 +7,7 @@ export class User extends UserBase {
 
     private _home: Location;
     staticCode: string;
-    dynamicCode: string;
+    private _dynamicCode: string;
     private _circles: Array<CircleBase> = [];
 
     addCircle(circle: CircleBase) {
@@ -24,6 +24,18 @@ export class User extends UserBase {
 
     get home(){
         return this._home;
+    }
+
+    resetDynamicCode(){
+        this.dynamicCode = "------";
+    }
+
+    set dynamicCode(code: string){
+        this._dynamicCode = code;
+    }
+
+    get dynamicCode(){
+        return this._dynamicCode;
     }
 
 }

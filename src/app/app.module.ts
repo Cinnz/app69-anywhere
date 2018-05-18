@@ -1,3 +1,4 @@
+import { Clipboard } from '@ionic-native/clipboard';
 import { Keyboard } from '@ionic-native/keyboard';
 import { Network } from '@ionic-native/network';
 import { BrowserModule } from '@angular/platform-browser';
@@ -45,7 +46,8 @@ import { FormsModule } from '@angular/forms';
     SfsModuleProvider,
     Network,
     ChatController,
-    Keyboard
+    Keyboard,
+    Clipboard
   ]
 })
 export class AppModule { }
