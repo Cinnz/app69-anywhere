@@ -14,7 +14,8 @@ import {
   App,
   PickerOptions,
   PickerColumn,
-  Config
+  Config,
+  MenuController
 } from 'ionic-angular';
 import {
   LocationService,
@@ -78,12 +79,14 @@ export class AwCreateRoutePage {
     isOnAddStep: boolean,
     tempStep: Location,
     isOnReorder: boolean,
+    isShowingDatePicker: boolean,
     polyline: Polyline
   } = {
       route: [],
       isOnAddStep: false,
       tempStep: null,
       isOnReorder: false,
+      isShowingDatePicker: false,
       polyline: null,
     }
 
@@ -91,11 +94,16 @@ export class AwCreateRoutePage {
     private mPlatform: Platform,
     private mModalController: ModalController,
     private mAlertController: AlertController,
+    private mMenuController: MenuController,
     private mApp: App,
     private mActionSheetController: ActionSheetController,
     private mChangeDetectorRef: ChangeDetectorRef,
     private mAwModule: AwModule,
     public navParams: NavParams) {
+    // let a = new LocationWithMarker(new Location("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", 0, 0, 1526831580000))
+    // a.location.title = "BlueGym Võ Thị Sáu Hà Nội"
+    // let b = new LocationWithMarker(new Location("BBBBBBBBBBBBBBBBBB", 0, 0, 1526835180000))
+    // this.mDatas.route.push(a, b);
   }
 
   ionViewDidEnter() {
@@ -106,8 +114,8 @@ export class AwCreateRoutePage {
     });
   }
 
-  ionViewWillLeave(){
-    if(this.map){
+  ionViewWillLeave() {
+    if (this.map) {
       this.map.remove();
     }
   }
@@ -258,7 +266,7 @@ export class AwCreateRoutePage {
   }
 
   setData(address: string, location: ILatLng, move?: boolean) {
-    this.mDatas.tempStep = new Location(address, location.lat, location.lng, 0);
+    this.mDatas.tempStep = new Location(address, location.lat, location.lng, new Date().getTime());
 
     if (move) {
       this.map.setCameraTarget(location);
@@ -482,5 +490,27 @@ export class AwCreateRoutePage {
     });
 
     alert.present();
+  }
+
+  editingStep: LocationWithMarker;
+  editingTime: Date;
+  onClickChangeTime(step: LocationWithMarker) {
+    this.mMenuController.enable(false);
+    this.editingStep = step;
+    this.editingTime = new Date(step.location.time);
+    this.mDatas.isShowingDatePicker = true;
+  }
+
+  onCancelDatePicker() {
+    this.mDatas.isShowingDatePicker = false;
+    this.mMenuController.enable(true);
+  }
+
+  onDatePickerChanged(data) {
+    let newTime = new Date(data['year'], data['month'] - 1, data['date'], data['hour'], data['minute']);
+
+    this.mDatas.isShowingDatePicker = false;
+    this.editingStep.location.time = newTime.getTime();
+    this.mMenuController.enable(true);
   }
 }

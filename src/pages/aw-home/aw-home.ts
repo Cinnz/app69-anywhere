@@ -57,8 +57,8 @@ export class AwHomePage {
     isOnDetail: boolean,
     memberDetail: Member,
     onLoading: boolean,
+    isShowingDatePicker: boolean,
     currentDateView: Date,
-    currentDateString: string,
     currentTrace: Array<Location>,
     currentRoute: Polyline,
     currentSteps: Array<Marker>
@@ -70,8 +70,8 @@ export class AwHomePage {
       isOnDetail: false,
       memberDetail: null,
       onLoading: false,
+      isShowingDatePicker: false,
       currentDateView: new Date(),
-      currentDateString: (new Date(Date.now() - ((new Date()).getTimezoneOffset() * 60000))).toISOString().slice(0, -1),// ISO string local date
       currentTrace: [],
       currentRoute: null,
       currentSteps: []
@@ -210,8 +210,10 @@ export class AwHomePage {
   showMembersOnMap() {
     if (this.map) {
       this.mDatas.circleMembers.forEach((member: Member) => {
-        if (member.marker && !member.marker.isVisible()) {
-          member.marker.setVisible(true);
+        if (member.marker) {
+          if (!member.marker.isVisible()) {
+            member.marker.setVisible(true);
+          }
         }
         else {
           if (member.location) {
@@ -234,8 +236,13 @@ export class AwHomePage {
   }
 
   hideMembersOnMap() {
+    console.log("hideMembersOnMap");
+
     this.mDatas.circleMembers.forEach((member: Member) => {
+      console.log(member);
       if (member.marker && member.marker.isVisible()) {
+        console.log("member-visible");
+
         member.marker.setVisible(false);
       }
     });
@@ -294,7 +301,7 @@ export class AwHomePage {
       // *Todo: Ẩn Marker các thành viên
       //        Show thông tin của thành viên đang được view
       this.mDatas.isOnDetail = true;
-      this.hideMembersOnMap();
+      // this.hideMembersOnMap();
     }
     else {
       // View Chi tiết thành viên => View thông tin vòng kết nối
@@ -428,8 +435,8 @@ export class AwHomePage {
       this.mDatas.memberDetail = this.mDatas.circleMembers[0];
       this.getMemberTrace(this.mDatas.memberDetail);
     }
-    this.showMembersBar();
     this.hideMembersOnMap();
+    this.showMembersBar();
     this.onChangePageView();
     this.mMenuController.enable(false);
   }
@@ -456,14 +463,26 @@ export class AwHomePage {
   }
 
   onClickDatePicker() {
-
+    this.mDatas.isShowingDatePicker = true;    
+    this.mMenuController.enable(false);
   }
 
   onClickStep(step: Location) {
-    Utils.animateCameraTo(this.map, step.latLng, 1000);
+    Utils.animateCameraTo(this.map, step.latLng, 1000, 840);
   }
 
   onClickChat() {
     this.navCtrl.push("AwChatPage", { circleId: this.mDatas.circleId });
+  }
+
+  onCancelDatePicker() {
+    this.mDatas.isShowingDatePicker = false;
+    this.mMenuController.enable(true);
+  }
+
+  onDatePickerChanged(data) {
+    this.mDatas.isShowingDatePicker = false;
+    this.mDatas.currentDateView = new Date(data['year'], data['month'] - 1, data['date']);
+    this.mMenuController.enable(true);
   }
 }

@@ -34,7 +34,7 @@
                     <div *ngIf="!mDatas.isOnReorder">
                         <ion-grid no-padding>
                             <ion-row class="step" *ngFor="let step of mDatas.route; first as f; last as l" (press)="onPressStep(step)">
-                                <ion-col col-2 class="icon-container a1-relative">
+                                <ion-col col-2 class="icon-container a1-relative" (click)="onClickStep(step)">
                                     <div class="route-connect-container a3-container-center" *ngIf="!f">
                                         <div class="route-connect"></div>
                                     </div>
@@ -42,13 +42,13 @@
                                         <ion-icon class="icon-point" [class.point]="!(f||l)" [name]="(f||l)?'aw-route-start':'aw-route-point'"></ion-icon>
                                     </div>
                                 </ion-col>
-                                <ion-col col-10 class="info-container a3-container a3-column a3-justify-center" (click)="onClickStep(step)">
+                                <ion-col col-10 class="info-container a3-container a3-column a3-justify-center">
                                     <ion-row>
-                                        <ion-col class="title">
+                                        <ion-col class="title" (click)="onClickStep(step)">
                                             {{ step.location.title }}
                                         </ion-col>
-                                        <ion-col col-3 class="time">
-                                            {{ step.location.time | date:'shortTime' }}
+                                        <ion-col col-5 class="time" (click)="onClickChangeTime(step)">
+                                            {{ step.location.time | date:'short' }}
                                         </ion-col>
                                     </ion-row>
                                     <ion-row>
@@ -100,3 +100,5 @@
     </div>
 
 </ion-content>
+
+<aw-date-picker *ngIf="mDatas.isShowingDatePicker" [time]="editingTime" [enableTime]="true" (cancel)="onCancelDatePicker()" (done)="onDatePickerChanged($event)"></aw-date-picker>

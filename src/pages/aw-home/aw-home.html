@@ -99,8 +99,7 @@
                     <span class="msg-number a3-container-center">{{ mDatas.circleNewMessages }}</span>
                 </div>
                 <div no-padding class="date-picker-btn a3-container-center" *ngIf="mDatas.isOnDetail" (click)="onClickDatePicker()">
-                    <ion-datetime class="title" displayFormat="DD/MM/YYYY" [(ngModel)]="mDatas.currentDateString"></ion-datetime>
-                    <!-- <span class="title">{{ mDatas.currentDateView | date:'mediumDate' }}</span> -->
+                    <span class="title">{{ mDatas.currentDateView | date:'mediumDate' }}</span>
                 </div>
             </div>
         </div>
@@ -109,3 +108,4 @@
 </ion-content>
 
 <aw-loading *ngIf="mDatas.onLoading"></aw-loading>
+<aw-date-picker *ngIf="mDatas.isShowingDatePicker" [time]="mDatas.currentDateView" (cancel)="onCancelDatePicker()" (done)="onDatePickerChanged($event)"></aw-date-picker>

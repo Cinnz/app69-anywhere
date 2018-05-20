@@ -18,11 +18,12 @@ export class Utils {
         return latLngs;
     }
 
-    public static animateCameraTo(map: GoogleMap, latLng: LatLng, duration: number) {
+    public static animateCameraTo(map: GoogleMap, latLng: LatLng, duration: number, padding?: number) {
         if (map) {
             let cameraPosition: CameraPosition<ILatLng> = {
                 target: latLng,
-                duration: duration
+                duration: duration,
+                padding: padding ? padding : 0
             }
             map.animateCamera(cameraPosition);
         }
