@@ -46,7 +46,8 @@ export class AwHomePage {
     title: "Vòng kết nối",
     chatButton: "Trò chuyện nhóm",
     pickDate: "Ngày cần xem",
-    notPublic: "Người dùng này không chia sẻ lộ trình"
+    notPublic: "Người dùng này không chia sẻ lộ trình",
+    emptyRoute: "Không có dữ liệu"
   }
 
   mDatas: {
@@ -84,9 +85,6 @@ export class AwHomePage {
     private mAwModule: AwModule,
     private mPlatform: Platform,
     public navParams: NavParams) {
-    console.log("constructor");
-
-
     //Event change current circle on View from Menu
     mEvents.subscribe("circle: changed", (circleId: string) => {
       this.showLoading();
@@ -103,7 +101,6 @@ export class AwHomePage {
   }
 
   ionViewDidLoad() {
-    console.log("ionViewDidLoad");
     this.mMenuController.enable(true);
 
     // for test
@@ -114,7 +111,6 @@ export class AwHomePage {
   }
 
   ionViewDidEnter() {
-    console.log("ionViewDidEnter");
     this.mPlatform.ready().then(() => {
       if (this.mPlatform.is('android') || this.mPlatform.is('ios')) {
         this.loadMap();
@@ -195,7 +191,7 @@ export class AwHomePage {
         this.map = GoogleMaps.create(mapElement, mapOption);
         this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
           console.log("map is ready.");
-          this.showMembersOnMap();
+          // this.showMembersOnMap();
         }).catch(e => {
           console.log("map is not ready", e);
         });
@@ -236,13 +232,9 @@ export class AwHomePage {
   }
 
   hideMembersOnMap() {
-    console.log("hideMembersOnMap");
-
     this.mDatas.circleMembers.forEach((member: Member) => {
       console.log(member);
       if (member.marker && member.marker.isVisible()) {
-        console.log("member-visible");
-
         member.marker.setVisible(false);
       }
     });
@@ -281,17 +273,20 @@ export class AwHomePage {
   }
 
   hideRouteOnMap() {
-    if (this.mDatas.currentRoute) {
-      this.mDatas.currentRoute.remove();
-      this.mDatas.currentRoute = null;
-    }
+    return new Promise((res, rej) => {
+      if (this.mDatas.currentRoute) {
+        this.mDatas.currentRoute.remove();
+        this.mDatas.currentRoute = null;
+      }
 
-    if (this.mDatas.currentSteps.length > 0) {
-      this.mDatas.currentSteps.forEach(step => {
-        step.remove();
-      });
-      this.mDatas.currentSteps = [];
-    }
+      if (this.mDatas.currentSteps.length > 0) {
+        this.mDatas.currentSteps.forEach(step => {
+          step.remove();
+        });
+        this.mDatas.currentSteps = [];
+      }
+      res();
+    })
   }
 
 
@@ -360,22 +355,26 @@ export class AwHomePage {
   }
 
   getMemberTrace(member: Member) {
-    this.hideRouteOnMap();
-    if (member.isPublic) {
-      this.showLoading();
+    this.showLoading();
+    this.mDatas.currentTrace = [];
+    this.hideRouteOnMap().then(() => {
+      if (member.isPublic) {
 
-      this.mAwModule.getUserTraces(member.id, Utils.getRequestDate(this.mDatas.currentDateView)).then((data: Trace) => {
-        this.mDatas.currentTrace = [];
-        data.steps.forEach((step: Location) => {
-          this.mDatas.currentTrace.push(step);
+        let tempSubscribe = this.mAwModule.getUserTraces(member.id, Utils.getRequestDate(this.mDatas.currentDateView)).subscribe((data: Trace) => {
+          if (data.steps.length > 0) {
+            data.steps.forEach((step: Location) => {
+              this.mDatas.currentTrace.push(step);
+            });
+
+            this.showRouteOnMap(this.mDatas.currentTrace, true);
+            Utils.animateCameraTo(this.map, this.mDatas.currentTrace[this.mDatas.currentTrace.length - 1].latLng, 1000);
+          }
+
+          tempSubscribe.unsubscribe();
+          this.hideLoading();
         });
-
-        this.showRouteOnMap(this.mDatas.currentTrace, true);
-
-        Utils.animateCameraTo(this.map, this.mDatas.currentTrace[0].latLng, 1000);
-        this.hideLoading();
-      });
-    }
+      }
+    });
   }
 
 
@@ -454,16 +453,15 @@ export class AwHomePage {
   }
 
   onClickTitle() {
-    this.hideMembersOnMap();
   }
 
   onClickChangeMemberDetail(member: Member) {
     this.mDatas.memberDetail = member;
-    this.getMemberTrace(member);
+    this.getMemberTrace(this.mDatas.memberDetail);
   }
 
   onClickDatePicker() {
-    this.mDatas.isShowingDatePicker = true;    
+    this.mDatas.isShowingDatePicker = true;
     this.mMenuController.enable(false);
   }
 
@@ -481,8 +479,11 @@ export class AwHomePage {
   }
 
   onDatePickerChanged(data) {
+    console.log("onDatePickerChanged");
+
     this.mDatas.isShowingDatePicker = false;
     this.mDatas.currentDateView = new Date(data['year'], data['month'] - 1, data['date']);
+    this.getMemberTrace(this.mDatas.memberDetail);
     this.mMenuController.enable(true);
   }
 }

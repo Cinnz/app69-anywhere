@@ -14,6 +14,8 @@ import {
 
 import { CircleController } from '../aw-controller/circle-controller';
 import { Member } from '../aw-classes/member';
+import { FirebaseModule } from '../firebase-module/firebase-module';
+import { AngularFirestore } from 'angularfire2/firestore';
 
 
 @Injectable()
@@ -21,11 +23,16 @@ export class AwModule {
 
   private _mUser: User = new User("", "", "");
 
-  private _mCircleController = new CircleController()
-  private _mTraceController = new TraceController();
+  private _mCircleController: CircleController;
+  private _mTraceController: TraceController;
+  private _mFirebaseModule: FirebaseModule;
 
   constructor(private mEvents: Events,
+    private mAngularFirestore: AngularFirestore,
     private mNetwork: Network) {
+    this._mCircleController = new CircleController();
+    this._mTraceController = new TraceController(mAngularFirestore);
+    this._mFirebaseModule = new FirebaseModule(mAngularFirestore);
   }
 
   get user() {
@@ -158,7 +165,7 @@ export class AwModule {
 
         this.mEvents.publish("circle: changed", circle.id);
         this.mEvents.publish("circleId: changed", circle.id);
-        
+
         res();
       }, 2000);
     });
@@ -219,5 +226,7 @@ export class AwModule {
   getCircleChatById(circleId: string): ChatBox {
     return;
   }
+
+  //------------------------------------FROM FIREBASE---------------------
 
 }

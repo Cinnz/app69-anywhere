@@ -5,7 +5,7 @@ import { LatLng, GoogleMap, CameraPosition, ILatLng } from '@ionic-native/google
 export class Utils {
 
     public static getRequestDate(date: Date) {
-        return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+        return date.getFullYear() + "-" + ((date.getMonth() < 9) ? ("0" + (date.getMonth() + 1)) : (date.getMonth() + 1)) + "-" + date.getDate();
     }
 
     public static latLngsFromSteps(steps: Array<Location>) {

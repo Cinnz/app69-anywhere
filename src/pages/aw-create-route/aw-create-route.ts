@@ -208,6 +208,7 @@ export class AwCreateRoutePage {
     let markerOptions: MarkerOptions = {
       icon: isCheckPoint ? "./assets/imgs/route-point.png" : "./assets/imgs/route-start.png",
       position: step.location.latLng,
+      anchor: [10, 10],
       size: {
         width: 20,
         height: 20
@@ -232,6 +233,7 @@ export class AwCreateRoutePage {
         let markerOptions: MarkerOptions = {
           icon: ((steps.indexOf(step) == 0) || (steps.indexOf(step) == (steps.length - 1))) ? "./assets/imgs/route-start.png" : "./assets/imgs/route-point.png",
           position: step.location.latLng,
+          anchor: [10, 10],
           size: {
             width: 20,
             height: 20

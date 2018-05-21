@@ -59,7 +59,7 @@
                 </ion-grid>
             </div>
             <div class="route-container" *ngIf="mDatas.isOnDetail">
-                <div *ngIf="mDatas.memberDetail?.isPublic">
+                <div *ngIf="mDatas.memberDetail?.isPublic" class="a1-fill-parent">
                     <ion-grid no-padding>
                         <ion-row class="step" *ngFor="let step of mDatas.currentTrace; first as f; last as l">
                             <ion-col col-2 class="icon-container a1-relative">
@@ -85,6 +85,9 @@
                             </ion-col>
                         </ion-row>
                     </ion-grid>
+                    <div class="notice a3-container-center a1-fill-parent" *ngIf="mDatas.currentTrace.length==0">
+                        <div>{{ mTexts.emptyRoute }}</div>
+                    </div>
                 </div>
                 <div class="notice a3-container-center a1-fill-parent" *ngIf="!mDatas.memberDetail?.isPublic">
                     <div>{{ mTexts.notPublic }}</div>

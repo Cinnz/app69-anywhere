@@ -54,34 +54,34 @@ export class CircleController {
                     adminId: circleId == "c0001" ? "u00001" : "u00002",
                     members: [
                         {
-                            id: "u0001",
+                            id: "u00001",
                             name: "mr A",
                             avatar: "./assets/imgs/logo.png",
                             isPublic: true,
                             location: { time: 1525419420000, address: "1 Đại Cồ Việt, Bách Khoa, Hai Bà Trưng, Hà Nội", lat: 21.007085, lng: 105.842882 }
                         },
                         {
-                            id: "u0002",
+                            id: "u00002",
                             name: "Nguyễn Văn B",
                             avatar: "./assets/imgs/logo.png",
                             isPublic: false,
                             location: { time: 1525448220000, address: "122 Bạch Mai, Hai Bà Trưng, Hà Nội", lat: 21.006065, lng: 105.851191 }
                         },
                         {
-                            id: "u0003",
+                            id: "u00003",
                             name: "Trần Minh C",
                             avatar: "./assets/imgs/logo.png",
                             isPublic: true
                         },
                         {
-                            id: "u0004",
+                            id: "u00004",
                             name: "Lê Văn D",
                             avatar: "./assets/imgs/logo.png",
                             isPublic: true,
                             location: { time: 1525448220000, address: "147 Phố Huế, Hai Bà Trưng, Hà Nội", lat: 21.014425, lng: 105.851760 }
                         },
                         {
-                            id: "u0005",
+                            id: "u00005",
                             name: "Dương Tùng E",
                             avatar: "./assets/imgs/logo.png",
                             isPublic: false,
