@@ -8,7 +8,7 @@ export class Location {
     private _title: string = "title";
 
     constructor(private _address: string, private _lat: number, private _lng: number, private _time: number) {
-        
+
     }
 
     setLatLng(latitude: number, longitude: number) {
@@ -42,5 +42,13 @@ export class Location {
 
     get latLng() {
         return new LatLng(this._lat, this._lng);
+    }
+}
+
+export class NotUploadYetLocation extends Location {
+    userId: string;
+
+    setUserId(userId: string) {
+        this.userId = userId;
     }
 }

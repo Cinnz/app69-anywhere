@@ -13,7 +13,8 @@ import {
   MenuController,
   Platform,
   ActionSheetController,
-  Events
+  Events,
+  AlertController
 } from 'ionic-angular';
 
 import {
@@ -26,10 +27,12 @@ import {
   CameraPosition,
   ILatLng,
   PolylineOptions,
-  Polyline
+  Polyline,
+  MyLocation
 } from '@ionic-native/google-maps';
 
 import { UserBase } from '../../providers/aw-classes/user-base';
+import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 
 @IonicPage()
 @Component({
@@ -83,7 +86,9 @@ export class AwHomePage {
     private mEvents: Events,
     private mActionSheetController: ActionSheetController,
     private mAwModule: AwModule,
+    private mAlertController: AlertController,
     private mPlatform: Platform,
+    private mGeolocation: Geolocation,
     public navParams: NavParams) {
     //Event change current circle on View from Menu
     mEvents.subscribe("circle: changed", (circleId: string) => {
@@ -114,6 +119,7 @@ export class AwHomePage {
     this.mPlatform.ready().then(() => {
       if (this.mPlatform.is('android') || this.mPlatform.is('ios')) {
         this.loadMap();
+        this.mAwModule.setUpBackgroundGeolocation();
       }
     });
   }
@@ -156,49 +162,68 @@ export class AwHomePage {
     if (!this.map) {
       let mapElement = document.getElementById("map");
 
-      LocationService.getMyLocation({ enableHighAccuracy: true }).then(location => {
-
-        let mapOption: GoogleMapOptions = {
-          mapType: 'MAP_TYPE_ROADMAP',
-          controls: {
-            compass: true,
-            myLocation: true,
-            myLocationButton: true,
-            indoorPicker: false,
-            mapToolbar: false,
-            zoom: false
+      let mapOption: GoogleMapOptions = {
+        mapType: 'MAP_TYPE_ROADMAP',
+        controls: {
+          compass: true,
+          myLocation: true,
+          myLocationButton: true,
+          indoorPicker: false,
+          mapToolbar: false,
+          zoom: false
+        },
+        gestures: {
+          scroll: true,
+          tile: false,
+          zoom: true,
+          rotate: true
+        },
+        // camera: {
+        //   target: location.latLng,
+        //   zoom: 17,
+        //   duration: 1000
+        // },
+        preferences: {
+          zoom: {
+            minZoom: 12,
+            maxZoom: 19
           },
-          gestures: {
-            scroll: true,
-            tile: false,
-            zoom: true,
-            rotate: true
-          },
-          camera: {
-            target: location.latLng,
-            zoom: 17,
-            duration: 1000
-          },
-          preferences: {
-            zoom: {
-              minZoom: 12,
-              maxZoom: 19
-            },
-            building: false,
-          }
+          building: false,
         }
+      }
 
-        this.map = GoogleMaps.create(mapElement, mapOption);
-        this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-          console.log("map is ready.");
-          // this.showMembersOnMap();
-        }).catch(e => {
-          console.log("map is not ready", e);
+      this.map = GoogleMaps.create(mapElement, mapOption);
+      this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+        this.mAwModule.checkLocationPermission().then(status => {
+          if (status) {
+            this.mAwModule.checkGPSPermission().then(status => {
+              if (!status) {
+                let alert = this.mAlertController.create({
+                  title: "We need access to your location",
+                  subTitle: "Enable GPS to have best experience!",
+                  buttons: [
+                    {
+                      text: "Settings",
+                      handler: () => {
+                        this.mAwModule.switchToLocationSettings();
+                        this.getCurrentLocation();
+                      }
+                    },
+                    {
+                      text: "Cancel"
+                    }
+                  ]
+                });
+                alert.present();
+              }
+              else {
+                this.getCurrentLocation();
+              }
+            });
+          }
         });
-
-
       }).catch(e => {
-        console.log("error cmnr", e);
+        console.log("map is not ready", e);
       });
     }
   }
@@ -233,7 +258,6 @@ export class AwHomePage {
 
   hideMembersOnMap() {
     this.mDatas.circleMembers.forEach((member: Member) => {
-      console.log(member);
       if (member.marker && member.marker.isVisible()) {
         member.marker.setVisible(false);
       }
@@ -289,6 +313,11 @@ export class AwHomePage {
     })
   }
 
+  getCurrentLocation() {
+    this.mGeolocation.getCurrentPosition({ enableHighAccuracy: false }).then((location: Geoposition) => {
+      Utils.animateCameraTo(this.map, new LatLng(location.coords.latitude, location.coords.longitude), 1000);
+    });
+  }
 
   onChangePageView() {
     if (!this.mDatas.isOnDetail) {
@@ -453,6 +482,8 @@ export class AwHomePage {
   }
 
   onClickTitle() {
+    console.log("onClickTitle");
+  
   }
 
   onClickChangeMemberDetail(member: Member) {

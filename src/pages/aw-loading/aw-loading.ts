@@ -16,9 +16,24 @@ export class AwLoadingPage {
 
   ionViewDidEnter() {
     this.mAwModule.subscribeNetworkDisconnected();
-    setTimeout(() => {
-      this.navCtrl.setRoot("AwWalkthroughPage");
-    }, 1000);
+
+    this.mAwModule.getLastestUserDataFromStorage().then(data => {
+      if (data) {
+        this.mAwModule.login(data['phonenumber'], data['password'], true).then(response => {
+          if (response['success']) {
+            this.navCtrl.setRoot("AwHomePage");
+          }
+          else {
+            this.navCtrl.setRoot("AwWalkthroughPage");
+          }
+        });
+      }
+      else {
+        setTimeout(() => {
+          this.navCtrl.setRoot("AwWalkthroughPage");
+        }, 1000);
+      }
+    });
   }
 
 }

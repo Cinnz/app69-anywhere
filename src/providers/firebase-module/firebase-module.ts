@@ -13,7 +13,6 @@ export class FirebaseModule {
   getTracesByUserId(userId: string, date: string) {
     return new Observable(observer => {
       this.mAngularFirestore.collection('/users').doc(userId).collection("" + date).valueChanges().subscribe(data => {
-      // this.mAngularFirestore.collection('/users').doc("u00001").collection("" + date).valueChanges().subscribe(data => {
         observer.next({
           data: data
         });
@@ -29,7 +28,10 @@ export class FirebaseModule {
         lng: location.latLng.lng,
         title: "",
         time: location.time
+      }).then(() => {
+        res();
       });
     });
   }
+
 }

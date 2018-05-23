@@ -50,44 +50,60 @@ export class CircleController {
             setTimeout(() => {
                 observer.next({
                     id: circleId,
-                    name: circleId == "c0001" ? "Bạn bè" : (circleId == "c0002" ? "Gia đình" : "Đồng Nghiệp"),
-                    adminId: circleId == "c0001" ? "u00001" : "u00002",
-                    members: [
-                        {
-                            id: "u00001",
-                            name: "mr A",
-                            avatar: "./assets/imgs/logo.png",
-                            isPublic: true,
-                            location: { time: 1525419420000, address: "1 Đại Cồ Việt, Bách Khoa, Hai Bà Trưng, Hà Nội", lat: 21.007085, lng: 105.842882 }
-                        },
-                        {
-                            id: "u00002",
-                            name: "Nguyễn Văn B",
-                            avatar: "./assets/imgs/logo.png",
-                            isPublic: false,
-                            location: { time: 1525448220000, address: "122 Bạch Mai, Hai Bà Trưng, Hà Nội", lat: 21.006065, lng: 105.851191 }
-                        },
-                        {
-                            id: "u00003",
-                            name: "Trần Minh C",
-                            avatar: "./assets/imgs/logo.png",
-                            isPublic: true
-                        },
-                        {
-                            id: "u00004",
-                            name: "Lê Văn D",
-                            avatar: "./assets/imgs/logo.png",
-                            isPublic: true,
-                            location: { time: 1525448220000, address: "147 Phố Huế, Hai Bà Trưng, Hà Nội", lat: 21.014425, lng: 105.851760 }
-                        },
-                        {
-                            id: "u00005",
-                            name: "Dương Tùng E",
-                            avatar: "./assets/imgs/logo.png",
-                            isPublic: false,
-                            location: { time: 1525448220000, address: "20 Ô Chợ Dừa, Đống Đa, Hà Nội", lat: 21.018991, lng: 105.828955 }
-                        },
-                    ],
+                    name: circleId == "c0001" ? "Bạn bè" : (circleId == "c0002" ? "Demo" : "Đồng Nghiệp"),
+                    adminId: circleId == "c0001" ? "u00001" : (circleId == "c0002" ? "0987654321" : "u00002"),
+                    members: circleId != "c0002" ?
+                        [
+                            {
+                                id: "u00001",
+                                name: "mr A",
+                                avatar: "./assets/imgs/logo.png",
+                                isPublic: true,
+                                location: { time: 1525419420000, address: "1 Đại Cồ Việt, Bách Khoa, Hai Bà Trưng, Hà Nội", lat: 21.007085, lng: 105.842882 }
+                            },
+                            {
+                                id: "u00002",
+                                name: "Nguyễn Văn B",
+                                avatar: "./assets/imgs/logo.png",
+                                isPublic: false,
+                                location: { time: 1525448220000, address: "122 Bạch Mai, Hai Bà Trưng, Hà Nội", lat: 21.006065, lng: 105.851191 }
+                            },
+                            {
+                                id: "u00003",
+                                name: "Trần Minh C",
+                                avatar: "./assets/imgs/logo.png",
+                                isPublic: true
+                            },
+                            {
+                                id: "u00004",
+                                name: "Lê Văn D",
+                                avatar: "./assets/imgs/logo.png",
+                                isPublic: true,
+                                location: { time: 1525448220000, address: "147 Phố Huế, Hai Bà Trưng, Hà Nội", lat: 21.014425, lng: 105.851760 }
+                            },
+                            {
+                                id: "u00005",
+                                name: "Dương Tùng E",
+                                avatar: "./assets/imgs/logo.png",
+                                isPublic: false,
+                                location: { time: 1525448220000, address: "20 Ô Chợ Dừa, Đống Đa, Hà Nội", lat: 21.018991, lng: 105.828955 }
+                            },
+                        ] : [
+                            {
+                                id: "0987654321",
+                                name: "0987654321",
+                                avatar: "./assets/imgs/logo.png",
+                                isPublic: true,
+                                location: { time: 1525448220000, address: "20 Ô Chợ Dừa, Đống Đa, Hà Nội", lat: 21.018991, lng: 105.828955 }
+                            },
+                            {
+                                id: "01234567899",
+                                name: "01234567899",
+                                avatar: "./assets/imgs/logo.png",
+                                isPublic: true,
+                                location: { time: 1525448220000, address: "20 Ô Chợ Dừa, Đống Đa, Hà Nội", lat: 21.018991, lng: 105.828955 }
+                            },
+                        ],
                     routes: []
                 });
             }, 1000);

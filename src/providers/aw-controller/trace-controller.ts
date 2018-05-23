@@ -10,10 +10,8 @@ import { Trace } from '../aw-classes/trace';
 export class TraceController {
 
     private _traces: Array<Trace> = [];
-    private _mFirebaseModule: FirebaseModule;
 
-    constructor(private mAngularFirestore: AngularFirestore) {
-        this._mFirebaseModule = new FirebaseModule(mAngularFirestore);
+    constructor(private mFirebaseModule: FirebaseModule) {
     }
 
     findTraceOnOurs(uid: string, date: string) {
@@ -77,6 +75,6 @@ export class TraceController {
     }
 
     requestTraceData(userId: string, date: string) {
-        return this._mFirebaseModule.getTracesByUserId(userId, date);
+        return this.mFirebaseModule.getTracesByUserId(userId, date);
     }
 }
