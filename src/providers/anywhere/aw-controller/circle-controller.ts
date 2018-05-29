@@ -103,6 +103,13 @@ export class CircleController {
                                 isPublic: true,
                                 location: { time: 1525448220000, address: "20 Ô Chợ Dừa, Đống Đa, Hà Nội", lat: 21.018991, lng: 105.828955 }
                             },
+                            {
+                                id: "0987654322",
+                                name: "0987654322",
+                                avatar: "./assets/imgs/logo.png",
+                                isPublic: true,
+                                location: { time: 1525448220000, address: "20 Ô Chợ Dừa, Đống Đa, Hà Nội", lat: 21.018991, lng: 105.828955 }
+                            },
                         ],
                     routes: []
                 });

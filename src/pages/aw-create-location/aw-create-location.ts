@@ -8,7 +8,7 @@ import {
   ILatLng,
 } from '@ionic-native/google-maps';
 
-import { AwModule } from './../../providers/aw-module/aw-module';
+import { AwModule } from './../../providers/anywhere/aw-module/aw-module';
 
 
 @IonicPage()

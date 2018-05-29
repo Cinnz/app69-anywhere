@@ -29,3 +29,5 @@
 </ion-content>
 
 <aw-loading *ngIf="mDatas.onLoading"></aw-loading>
+
+<aw-verify-otp *ngIf="mDatas.onVerifying" [timestamp]="mDatas.lastGetOtp" (cancel)="onCancelVerify()" (verify)="onVerify($event)" (resend)="onResend()"></aw-verify-otp>

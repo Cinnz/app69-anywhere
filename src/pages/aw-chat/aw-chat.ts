@@ -1,5 +1,5 @@
-import { ChatBox } from './../../providers/aw-classes/chat-box';
-import { AwModule } from './../../providers/aw-module/aw-module';
+import { ChatBox } from './../../providers/anywhere/aw-classes/chat-box';
+import { AwModule } from './../..//providers/anywhere/aw-module/aw-module';
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, Content } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';

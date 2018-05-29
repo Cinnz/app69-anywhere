@@ -1,6 +1,6 @@
 import { AngularFirestore } from 'angularfire2/firestore';
 import { FirebaseModule } from './../firebase-module/firebase-module';
-import { Utils } from './../app-utils';
+import { Utils } from '../../app-utils';
 import { Observable } from 'rxjs/observable';
 import { Injectable } from '@angular/core';
 import { Trace } from '../aw-classes/trace';

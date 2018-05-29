@@ -1,5 +1,5 @@
 import { AccountValidators } from './../../validators/account.validators';
-import { AwModule } from './../../providers/aw-module/aw-module';
+import { AwModule } from './../../providers/anywhere/aw-module/aw-module';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, ToastController, MenuController } from 'ionic-angular';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -89,10 +89,9 @@ export class AwLoginPage {
         if (data['success']) {
           this.navCtrl.setRoot("AwHomePage");
         }
-        else {
-          if (data['msg']) {
-            this.showToast(data['msg'])
-          }
+
+        if (data['msg']) {
+          this.showToast(data['msg'])
         }
       }).catch(e => {
         this.hideLoading();

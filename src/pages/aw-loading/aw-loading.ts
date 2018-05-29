@@ -1,4 +1,4 @@
-import { AwModule } from './../../providers/aw-module/aw-module';
+import { AwModule } from './../../providers/anywhere/aw-module/aw-module';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 

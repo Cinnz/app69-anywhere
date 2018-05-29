@@ -1,4 +1,4 @@
-import { Location } from './aw-classes/location';
+import { Location } from './anywhere/aw-classes/location';
 import { LatLng, GoogleMap, CameraPosition, ILatLng } from '@ionic-native/google-maps';
 
 

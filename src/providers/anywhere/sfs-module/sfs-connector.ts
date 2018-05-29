@@ -1,10 +1,12 @@
+import { SFSEvent } from '../../core/smartfox/sfs-events';
 import { Injectable } from '@angular/core';
 import { Md5 } from 'ts-md5/dist/md5';
+import { SfsCmd } from './sfs-cmd';
 
 declare var SFS2X;
 
 @Injectable()
-export class SfsModule {
+export class AwSFSConnector  {
 
   secret = "9ACC22D8B0595EE06CDC8ACB5460560D";
 
@@ -14,11 +16,12 @@ export class SfsModule {
   isLoggedIn = false;
 
   constructor() {
+    this.connect();
   }
 
   init() {
     var anywhereConfig = {
-      host: "192.168.2.176",
+      host: "192.168.2.177",
       port: 8887,
       zone: "AnywhereZone",
       debud: true,
@@ -36,6 +39,7 @@ export class SfsModule {
     // Add event listeners
     this.mSFSClient.addEventListener(SFS2X.SFSEvent.CONNECTION, this.onConnection, this)
 
+    this.mSFSClient.addEventListener(SFS2X.SFSEvent.EXTENSION_RESPONSE, this.onExtensionResponse, this);
   }
 
   /**Khi thiết lập được kết nối, làm một số việc linh tinh ...*/
@@ -77,7 +81,7 @@ export class SfsModule {
     });
   }
 
-  public _Disconnect() {
+  public disconnect() {
     return new Promise((resolve, reject) => {
       if (!this.isConnected || !this.mSFSClient) {
         return resolve();
@@ -101,16 +105,25 @@ export class SfsModule {
   }
 
   login(phonenumber: string, password: string, isMd5?: boolean) {
+    console.log(phonenumber, password, isMd5);
+
     return new Promise((res, rej) => {
-      let md5Password = isMd5 ? password : Md5.hashStr(password);
+
       if (!phonenumber && !password) {
         // Fake Login to sign up
+        this.mSFSClient.removeEventListener(SFS2X.SFSEvent.LOGIN, () => { });
+
+        this.mSFSClient.addEventListener(SFS2X.SFSEvent.LOGIN, (loginResponse) => {
+          res();
+        }, this);
+
         this.mSFSClient.send(new SFS2X.LoginRequest());
       }
       else {
         // Disconnect => Connect => Login
-        this._Disconnect().then(() => {
+        this.disconnect().then(() => {
           this.connect().then(() => {
+            let md5Password = isMd5 ? password : Md5.hashStr(password);
             let params = new SFS2X.SFSObject();
 
             params.putUtfString("phonenumber", phonenumber);
@@ -118,14 +131,76 @@ export class SfsModule {
             params.putUtfString("sign", Md5.hashStr(phonenumber + this.secret + md5Password));
 
             this.mSFSClient.removeEventListener(SFS2X.SFSEvent.LOGIN, () => { });
+            this.mSFSClient.removeEventListener(SFS2X.SFSEvent.LOGIN_ERROR, () => { });
+
             this.mSFSClient.addEventListener(SFS2X.SFSEvent.LOGIN, (loginResponse) => {
-              res(loginResponse);
               this.SFSLog(loginResponse)
+              res({ success: 1, msg: "Đăng nhập thành công" });
+            }, this);
+
+            this.mSFSClient.addEventListener(SFS2X.SFSEvent.LOGIN_ERROR, (loginResponse) => {
+              console.log("LOGIN_ERROR", loginResponse);
+
+              res({ success: 0, msg: "Tài khoản hoặc mật khẩu không đúng" })
             }, this);
 
             this.mSFSClient.send(new SFS2X.LoginRequest(phonenumber, "", params, "AnywhereZone"));
           });
         });
+      }
+    });
+  }
+
+  getOtp(phonenumber: string) {
+    return new Promise((res, rej) => {
+      let params = new SFS2X.SFSObject();
+
+      params.putUtfString("phonenumber", phonenumber);
+      params.putUtfString("REQUEST_ID", SfsCmd.GET_OTP);
+
+      if (this.isConnected) {
+        res(this.mSFSClient.send(new SFS2X.ExtensionRequest("lobby", params)));
+      }
+      else {
+        this.connect().then(() => {
+          res(this.mSFSClient.send(new SFS2X.ExtensionRequest("lobby", params)));
+        }).catch(e => {
+          rej();
+        });
+      }
+    });
+  }
+
+  onExtensionResponse(response) {
+    console.log(response);
+
+    // request get OTP
+    if (response.cmd == SfsCmd.GET_OTP) {
+
+    }
+    // request confirm OTP
+    else if (response.cmd == SfsCmd.VERIFY_OTP) {
+
+    }
+  }
+
+  signUp(phonenumber: string, password: string, otp: string) {
+    return new Promise((res, rej) => {
+      let params = new SFS2X.SFSObject();
+
+      params.putUtfString("REQUEST_ID", "verify_otp");
+      params.putUtfString("otp_code", otp);
+      params.putUtfString("phonenumber", phonenumber);
+      params.putUtfString("password", Md5.hashStr(password));
+      params.putUtfString("name", phonenumber);
+      params.putUtfString("avatar", "Hoai Nam avatar");
+      params.putUtfString("address", "Hoai Nam address");
+
+      if (this.isConnected) {
+        this.mSFSClient.send(new SFS2X.ExtensionRequest("lobby", params));
+      }
+      else {
+
       }
     });
   }

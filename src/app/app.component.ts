@@ -1,5 +1,5 @@
-import { User } from './../providers/aw-classes/user';
-import { AwModule } from './../providers/aw-module/aw-module';
+import { User } from './../providers/anywhere/aw-classes/user';
+import { AwModule } from './../providers/anywhere/aw-module/aw-module';
 import { Component } from '@angular/core';
 import { Platform, MenuController, NavController, App, Events } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';

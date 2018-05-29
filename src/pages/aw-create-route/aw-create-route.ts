@@ -1,7 +1,7 @@
 import { LatLng } from '@ionic-native/google-maps';
 import { Utils } from './../../providers/app-utils';
-import { AwModule } from './../../providers/aw-module/aw-module';
-import { Location } from './../../providers/aw-classes/location';
+import { AwModule } from './../../providers/anywhere/aw-module/aw-module';
+import { Location } from './../../providers/anywhere/aw-classes/location';
 import { Component, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import {
   IonicPage,

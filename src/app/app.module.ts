@@ -16,13 +16,12 @@ import { Storage, IonicStorageModule } from '@ionic/storage';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
-import { AwModule } from '../providers/aw-module/aw-module';
-import { CircleController } from '../providers/aw-controller/circle-controller';
-import { UserController } from '../providers/aw-controller/user-controller';
-import { TraceController } from '../providers/aw-controller/trace-controller';
-import { SfsModule } from '../providers/sfs-module/sfs-module';
-import { ChatController } from '../providers/aw-controller/chat-controller';
-import { FirebaseModule } from '../providers/firebase-module/firebase-module';
+import { AwModule } from '../providers/anywhere/aw-module/aw-module';
+import { CircleController } from '../providers/anywhere/aw-controller/circle-controller';
+import { UserController } from '../providers/anywhere/aw-controller/user-controller';
+import { TraceController } from '../providers/anywhere/aw-controller/trace-controller';
+import { ChatController } from '../providers/anywhere/aw-controller/chat-controller';
+import { FirebaseModule } from '../providers/anywhere/firebase-module/firebase-module';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule, AngularFireDatabase } from 'angularfire2/database';
@@ -75,7 +74,6 @@ export const firebaseConfig = {
     CircleController,
     UserController,
     TraceController,
-    SfsModule,
     Network,
     ChatController,
     Keyboard,

@@ -1,9 +1,9 @@
 import { Utils } from './../../providers/app-utils';
-import { AwModule } from './../../providers/aw-module/aw-module';
-import { Member } from './../../providers/aw-classes/member';
-import { Location } from './../../providers/aw-classes/location';
-import { Trace } from './../../providers/aw-classes/trace';
-import { Circle } from './../../providers/aw-classes/circle';
+import { AwModule } from './../../providers/anywhere/aw-module/aw-module';
+import { Member } from './../../providers/anywhere/aw-classes/member';
+import { Location } from './../../providers/anywhere/aw-classes/location';
+import { Trace } from './../../providers/anywhere/aw-classes/trace';
+import { Circle } from './../../providers/anywhere/aw-classes/circle';
 import { Component, ViewChild, ElementRef } from '@angular/core';
 
 import {
@@ -31,7 +31,7 @@ import {
   MyLocation
 } from '@ionic-native/google-maps';
 
-import { UserBase } from '../../providers/aw-classes/user-base';
+import { UserBase } from '../../providers/anywhere/aw-classes/user-base';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 
 @IonicPage()
@@ -106,16 +106,17 @@ export class AwHomePage {
   }
 
   ionViewDidLoad() {
-    this.mMenuController.enable(true);
 
     // for test
-    this.mAwModule.login("", "");
+    // this.mAwModule.login("", "");
 
-    this.mAwModule.onFirstTime();
 
   }
 
   ionViewDidEnter() {
+    this.mMenuController.enable(true);
+    this.mAwModule.onFirstTime();
+    
     this.mPlatform.ready().then(() => {
       if (this.mPlatform.is('android') || this.mPlatform.is('ios')) {
         this.loadMap();
@@ -483,7 +484,10 @@ export class AwHomePage {
 
   onClickTitle() {
     console.log("onClickTitle");
-  
+    
+    this.mAwModule.storage.remove("phonenumber");
+    this.mAwModule.storage.remove("password");
+    this.mAwModule.logBackgroundLocations();
   }
 
   onClickChangeMemberDetail(member: Member) {

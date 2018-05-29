@@ -1,4 +1,5 @@
-import { AwModule } from './../../providers/aw-module/aw-module';
+import { SFSDispatcher } from './../../providers/core/smartfox/sfs-dispatcher';
+import { AwModule } from './../../providers/anywhere/aw-module/aw-module';
 import { AccountValidators } from './../../validators/account.validators';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component } from '@angular/core';
@@ -22,7 +23,10 @@ export class AwSignupPage {
 
   mDatas = {
     minPassword: 6,
-    onLoading: false
+    onLoading: false,
+    onVerifying: false,
+    lastGetOtp: 0,
+    lastSentPhonenumber: ""
   }
 
   form = new FormGroup({
@@ -45,7 +49,7 @@ export class AwSignupPage {
   ionViewDidLoad() {
     this.mMenuController.enable(false);
   }
-  
+
   get phonenumber() {
     return this.form.get("phonenumber");
   }
@@ -62,14 +66,6 @@ export class AwSignupPage {
     return this.form.get("passwordGroup");
   }
 
-  showLoading() {
-    this.mDatas.onLoading = true;
-  }
-
-  hideLoading() {
-    this.mDatas.onLoading = false;
-  }
-
   showToast(message: string, duration?: number) {
     let toast = this.mToastController.create({
       message: message,
@@ -80,42 +76,121 @@ export class AwSignupPage {
   }
 
   onClickSignUp() {
-    if (this.form.valid) {
-      this.showLoading();
+    let phonenumber = "0" + this.form.value.phonenumber;
 
-      let phonenumber = "0" + this.form.value.phonenumber;
-      let password = this.passwordGroup.value.password;
+    this.showLoading();
+    this.mAwModule.tryToSignUp().then(data => {
+      this.mAwModule.getOtp(phonenumber).then(data => {
+        console.log(data);
+      });
+    });
 
-      this.mAwModule.signUp(phonenumber, password).then(data => {
+    // this.mAwModule.login("", "").then((data) => {
+    //   console.log("data from signup", data);
+
+    //   if (this.form.valid) {
+
+    //     if (this.isAvailableSendOtp()) {
+    //       this.sendOtpToUser(phonenumber);
+    //     }
+    //     else {
+    //       this.hideLoading();
+    //       this.showVerify();
+    //     }
+    //   }
+    //   else {
+    //     if (this.phonenumber.errors) {
+    //       this.showToast("Số điện thoại không hợp lệ");
+    //     }
+    //     else if (this.password.errors) {
+    //       this.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự");
+    //     }
+    //     else if (this.passwordGroup.errors) {
+    //       this.showToast("Mật khẩu xác nhận không khớp");
+    //     }
+    //   }
+    // });
+  }
+
+  isAvailableSendOtp() {
+    let phonenumber = "0" + this.form.value.phonenumber;
+    return (((new Date().getTime() - this.mDatas.lastGetOtp) >= 6000)
+      || (this.mDatas.lastSentPhonenumber != phonenumber))
+  }
+
+  sendOtpToUser(phonenumber: string) {
+    this.mAwModule.getOtp(phonenumber).then((data) => {
+      console.log("dataaaaa: ", data);
+
+      if (data) {
         this.hideLoading();
-        if (data['success']) {
-          this.navCtrl.setRoot("AwCreateLocationPage");
-        }
-        else {
-          if (data['msg']) {
-            this.showToast(data['msg']);
-          }
-        }
-      }).catch(e => {
+        this.mDatas.lastGetOtp = new Date().getTime();
+        this.mDatas.lastSentPhonenumber = "0" + this.form.value.phonenumber;
+        this.showVerify();
+      }
+      else {
         this.hideLoading();
         this.showToast("Vui lòng kiểm tra kết nối mạng")
-      });
-    }
-    else {
-      if (this.phonenumber.errors) {
-        this.showToast("Số điện thoại không hợp lệ");
       }
-      else if (this.password.errors) {
-        this.showToast("Mật khẩu dài tối thiểu " + this.mDatas.minPassword + " ký tự");
-      }
-      else if (this.passwordGroup.errors) {
-        this.showToast("Mật khẩu xác nhận không khớp");
-      }
-    }
+    }).catch(e => {
+      this.hideLoading();
+      this.showToast("Vui lòng kiểm tra kết nối mạng")
+    })
   }
 
   onClickLogin() {
     this.navCtrl.pop({ animation: 'ios-transition' });
   }
 
+  showLoading() {
+    this.mDatas.onLoading = true;
+  }
+
+  hideLoading() {
+    this.mDatas.onLoading = false;
+  }
+
+  showVerify() {
+    this.mDatas.onVerifying = true;
+  }
+
+  hideVerify() {
+    this.mDatas.onVerifying = false;
+  }
+
+  onCancelVerify() {
+    this.hideVerify();
+  }
+
+  onVerify(e) {
+    console.log(e.otp);
+
+    let phonenumber = "0" + this.form.value.phonenumber;
+    let password = this.passwordGroup.value.password;
+
+    this.mAwModule.signUp(phonenumber, password, e.otp).then(data => {
+      this.hideLoading();
+      if (data['success']) {
+        this.navCtrl.setRoot("AwCreateLocationPage");
+      }
+      else {
+        if (data['msg']) {
+          this.showToast(data['msg']);
+        }
+      }
+    }).catch(e => {
+      this.hideLoading();
+      this.showToast("Vui lòng kiểm tra kết nối mạng")
+    });
+    // this.hideVerify();
+  }
+
+  onResend() {
+    let phonenumber = "0" + this.form.value.phonenumber;
+    if (this.isAvailableSendOtp())
+      this.sendOtpToUser(phonenumber);
+    else {
+      this.showToast("Thời gian tối thiểu là 60 giây");
+    }
+  }
 }

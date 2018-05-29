@@ -1,4 +1,4 @@
-import { Utils } from './../app-utils';
+import { Utils } from '../../app-utils';
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { ChatBox } from './../aw-classes/chat-box';
 import { Location, NotUploadYetLocation } from './../aw-classes/location';
@@ -26,7 +26,7 @@ import { Storage } from '@ionic/storage';
 import { Md5 } from 'ts-md5/dist/md5';
 
 import { Http } from '@angular/http';
-import { SfsModule } from '../sfs-module/sfs-module';
+import { AwSFSConnector } from '../sfs-module/sfs-connector';
 
 @Injectable()
 export class AwModule {
@@ -36,11 +36,11 @@ export class AwModule {
   private _mCircleController: CircleController;
   private _mTraceController: TraceController;
   private _mFirebaseModule: FirebaseModule;
-  private _mSfsModule: SfsModule;
+  private _mSfsModule: AwSFSConnector;
 
-  private MIN_TIME_REQUEST = 1800000; // 30 minutes per step
-  private RANGE_TIME_REQUEST = 300000; // 5 minutes difference
-  private STATION_RADIUS = 300; // station radius in meters
+  private MIN_TIME_REQUEST = 600000; // 30 minutes per step = 1800000
+  private STATION_RADIUS = 300; // station radius in meters = 300
+  private DISTANCE_FILTER = 500; // distance filter in meters = 500
 
   private notUploadYet: Array<NotUploadYetLocation> = []
 
@@ -57,19 +57,26 @@ export class AwModule {
     this._mCircleController = new CircleController();
     this._mFirebaseModule = new FirebaseModule(mAngularFirestore);
     this._mTraceController = new TraceController(this._mFirebaseModule);
-    this._mSfsModule = new SfsModule();
+    if (!this.ISDEBUGGING) {
+      this._mSfsModule = new AwSFSConnector();
+    }
   }
 
   get user() {
     return this._mUser;
   }
 
-  login(phonenumber: string, password: string, isMd5?: boolean) {
+  login(phonenumber: string, password: string, isMd5?: boolean) {    
+    console.log("here");
+    
     return new Promise((res, rej) => {
       if (this.ISDEBUGGING) {
+        console.log("hereeeee");
         // test: phonenumber: 0987654321 - password: 123456
         setTimeout(() => {
-          if ((phonenumber == "0987654321") || (phonenumber == "01234567899")) {
+          if ((phonenumber == "0987654321")
+            || (phonenumber == "01234567899")
+            || (phonenumber == "0987654322")) {
             if (isMd5 || password == "123456") {
               this._mUser = new User(phonenumber, phonenumber, "./assets/imgs/logo.png")
               this.fakeUser();
@@ -91,7 +98,15 @@ export class AwModule {
       }
       else {
         this._mSfsModule.login(phonenumber, password, isMd5).then(loginResponse => {
-          res({ success: 1 });
+          // thiếu: get User data
+
+          // this.uploadSavedSteps();
+          // this.saveUserInfoToStorage(phonenumber, password);
+
+          // Publish event update user's info to update Menu's data
+          this.mEvents.publish("user: changed", this._mUser);
+
+          res(loginResponse);
         });
       }
     });
@@ -103,111 +118,161 @@ export class AwModule {
       // timestamp location cuối cùng được duyệt trong locations của Plugin
       // là timestamp của location upload thành công cuối cùng
       // hoặc timestamp của location cuối cùng đang lưu trong Storage (nếu có)
-      let lastMillis: number;
+      let realLastLocation: NotUploadYetLocation = null;
+      console.log("full locations: ", locations);
 
-      this.storage.get("last-upload-location-time").then(time => {
-        if (time)
-          lastMillis = parseInt(time);
-        else
-          lastMillis = 0;
+      this.storage.get("last-upload-location").then(data => {
+
+        console.log("last-upload-location: ", data);
+        let lastLocation = JSON.parse(data);
+        console.log("lastLocation: ", lastLocation);
+
+        if (lastLocation != null) {
+          realLastLocation = new NotUploadYetLocation(lastLocation._address, lastLocation._lat, lastLocation._lng, lastLocation._time);
+          realLastLocation.setUserId(lastLocation.userId);
+        }
 
         this.storage.get("not-upload-locations-yet").then(data => {
+          console.log("not-upload-locations-yet: ", data);
           let steps = JSON.parse(data);
 
           if (steps) {
             for (let i = 0; i < steps.length; i++) {
+              let step = new NotUploadYetLocation(steps[i]._address, steps[i]._lat, steps[i]._lng, steps[i]._time);
+              step.setUserId(steps[i].userId);
               this.notUploadYet.push(steps[i]);
             }
           }
 
           // Mảng này sẽ không quá lớn => Sắp xếp tăng dần theo "time"
           // Thay cho việc phải duyệt xuôi tất cả location trong Plugin ở bước sau.
-          for (let i = 0; i < this.notUploadYet.length - 1; i++) {
-            for (let j = i + 1; j < this.notUploadYet.length; j++) {
-              if (this.notUploadYet[i].time > this.notUploadYet[j].time) {
-                let temp = this.notUploadYet[i];
-                this.notUploadYet[i] = this.notUploadYet[j];
-                this.notUploadYet[j] = temp;
-              }
-            }
-          }
+          this.arrangeNotUploadLocations();
+
+          console.log("after storage", this.notUploadYet);
+
 
           // location cuối cùng trong Storage sẽ nằm cuối cùng
           if (this.notUploadYet.length > 0) {
-            lastMillis = this.notUploadYet[this.notUploadYet.length - 1].time;
+            realLastLocation = this.notUploadYet[this.notUploadYet.length - 1];
           }
 
-          // Check nhẹ xem có cần duyệt đám locations trong Plugins ko?
-          if (locations.length > 0 && locations[locations.length - 1].time > lastMillis) {
+
+          if (locations.length > 0) {
 
             let firstCheckIndex = locations.length - 1;
-            if (locations.length > 0) {
-              let firstLocation = new NotUploadYetLocation("", locations[locations.length - 1].latitude, locations[locations.length - 1].longitude, locations[locations.length - 1].time);
-
+            let firstLocation = new NotUploadYetLocation("", locations[firstCheckIndex].latitude, locations[firstCheckIndex].longitude, locations[firstCheckIndex].time);
+            // Check nhẹ xem có cần duyệt đám locations trong Plugins ko?
+            if ((realLastLocation && (realLastLocation.userId != this._mUser.id))
+              || (this.isValidLocation(firstLocation, realLastLocation))) {
               firstLocation.setUserId(this._mUser.id);
               this.notUploadYet.push(firstLocation);
               firstCheckIndex = locations.length - 2;
-            }
 
-            for (let i = firstCheckIndex; i > 0; i--) {
-              let onCalculate = locations[i];
+              console.log("---MIN_TIME_REQUEST: ", this.MIN_TIME_REQUEST);
 
-              if (onCalculate.time > lastMillis) {
-                let preLocation = locations[i - 1];
-                let deltaTime = Math.abs(onCalculate.time - preLocation.time);
-                let distanceBtwn = Spherical.computeDistanceBetween(
-                  new LatLng(preLocation.latitude, preLocation.longitude),
-                  new LatLng(onCalculate.latitude, onCalculate.longitude)
-                );
+              for (let i = firstCheckIndex; i > 0; i--) {
+                let onCalculate = new NotUploadYetLocation("", locations[i].latitude, locations[i].longitude, locations[i].time);;
 
-                if ((deltaTime > (this.MIN_TIME_REQUEST - this.RANGE_TIME_REQUEST))
-                  && (distanceBtwn < this.STATION_RADIUS)) {
-                  let niceLocation = new NotUploadYetLocation("", onCalculate.latitude, onCalculate.longitude, onCalculate.time)
-                  niceLocation.setUserId(this._mUser.id);
-                  this.notUploadYet.push(niceLocation);
+                if ((realLastLocation == null) || (onCalculate.time > realLastLocation.time)) {
 
-                  if (i == 1) {
-                    let niceLocation = new NotUploadYetLocation("", preLocation.latitude, preLocation.longitude, preLocation.time)
-                    niceLocation.setUserId(this._mUser.id);
-                    this.notUploadYet.push(niceLocation);
+                  let preLocation = this.notUploadYet[this.notUploadYet.length - 1];
+                  if (this.isValidLocation(onCalculate, preLocation)) {
+
+                    onCalculate.setUserId(this._mUser.id);
+                    console.log("Được: ", onCalculate);
+
+                    this.notUploadYet.push(onCalculate);
+
+                    if (i == 1) {
+                      let niceLocation = new NotUploadYetLocation("", preLocation.latLng.lat, preLocation.latLng.lng, preLocation.time)
+                      niceLocation.setUserId(this._mUser.id);
+                      this.notUploadYet.push(niceLocation);
+                    }
                   }
                 }
-              }
-              else {
-                // Do các location trong Plugin được xếp tăng dần
-                // => duyệt ngược đến giá trị timestamp là ok
-                break;
+
+                else {
+                  // Do các location trong Plugin được xếp tăng dần
+                  // => duyệt ngược đến giá trị timestamp là ok
+                  break;
+                }
               }
             }
+            else {
+              console.log("Login gần nhau quá");
+
+            }
+
+            this.arrangeNotUploadLocations();
+            console.log("Trước khi upload: ", this.notUploadYet);
+            this.upLoadLocations();
           }
-          this.upLoadLocations();
         });
       });
     });
+  }
+
+  arrangeNotUploadLocations() {
+    for (let i = 0; i < this.notUploadYet.length - 1; i++) {
+      for (let j = i + 1; j < this.notUploadYet.length; j++) {
+        if (this.notUploadYet[i].time > this.notUploadYet[j].time) {
+          let temp = this.notUploadYet[i];
+          this.notUploadYet[i] = this.notUploadYet[j];
+          this.notUploadYet[j] = temp;
+        }
+      }
+    }
   }
 
   /**
    * Upload đám location chưa đc upload
    */
   private upLoadLocations() {
-    for (let i = 0; i < this.notUploadYet.length; i++) {
-      let location = this.notUploadYet[i];
+    // Có Network => Check danh sách
+    //               => Có => push
+    //               => Không => done => remove from storage
+    // Không => Lưu danh sách lại 
 
-      if (this.mNetwork.type != "none") {
-        this.pushNewBackgroundLocation(location.userId, location);
-        this.notUploadYet.splice(i, 1);
-        i--;
+    if (this.mNetwork.type != "none") {
+      if (this.notUploadYet.length > 0) {
+        let i = 0;
+        let location = this.notUploadYet[i];
 
-        // Upload hết rồi thì xóa trong Storage thôi
-        if (i == this.notUploadYet.length - 1) {
-          this.storage.remove("not-upload-locations-yet");
-        }
+        this.pushNewBackgroundLocation(location.userId, location).then(() => {
+          this.notUploadYet.splice(i, 1);
+          this.upLoadLocations();
+        }).catch(e => {
+          this.storage.set('not-upload-locations-yet', JSON.stringify(this.notUploadYet));
+        });
       }
       else {
-        // Lưu vào Storage các bước di chuyển chưa upload lên Server (trường hợp disconnect)
-        this.storage.set('not-upload-locations-yet', JSON.stringify(this.notUploadYet));
-        break;
+        this.storage.remove("not-upload-locations-yet");
       }
+    }
+    else {
+      this.storage.set('not-upload-locations-yet', JSON.stringify(this.notUploadYet));
+    }
+
+  }
+
+  /**
+   * Điều kiện upload: DeltaT > MIN_TIME_REQUEST(30p) và distanceBtwn > STATION_RADIUS(300m)
+   */
+  isValidLocation(onCheckLocation: Location, preLocation: Location) {
+    console.log("isValidLocation: ", onCheckLocation, preLocation);
+
+    if (preLocation) {
+      let deltaTime = Math.abs(onCheckLocation.time - preLocation.time);
+      let distanceBtwn = Spherical.computeDistanceBetween(
+        new LatLng(onCheckLocation.latLng.lat, onCheckLocation.latLng.lng),
+        new LatLng(preLocation.latLng.lat, preLocation.latLng.lng)
+      );
+      console.log("check Điều kiện:", deltaTime, distanceBtwn);
+
+      return ((deltaTime >= this.MIN_TIME_REQUEST) && (distanceBtwn >= this.STATION_RADIUS))
+    }
+    else {
+      return true;
     }
   }
 
@@ -226,26 +291,31 @@ export class AwModule {
     });
   }
 
-  signUp(phonenumber: string, password: string) {
+  signUp(phonenumber: string, password: string, otp: string) {
     console.log("sign up: ", phonenumber, password);
 
-    // request sign up
-    // test: phonenumber: 0987654321 - password: 123456
-    return new Promise((res, rej) => {
-      setTimeout(() => {
-        if ((phonenumber == "0987654321") || (phonenumber == "01234567899")) {
-          res({ success: 0, msg: "SĐT này đã đăng ký" });
-        }
-        else {
-          this.fakeUser();
+    if (this.ISDEBUGGING) {
+      // request sign up
+      // test: phonenumber: 0987654321 - password: 123456
+      return new Promise((res, rej) => {
+        setTimeout(() => {
+          if ((phonenumber == "0987654321") || (phonenumber == "01234567899")) {
+            res({ success: 0, msg: "SĐT này đã đăng ký" });
+          }
+          else {
+            this.fakeUser();
 
-          // Publish event update user's info to update Menu's data
-          this.mEvents.publish("user: changed", this._mUser);
+            // Publish event update user's info to update Menu's data
+            this.mEvents.publish("user: changed", this._mUser);
 
-          res({ success: 1, msg: "Đăng ký thành công" });
-        }
-      }, 1000);
-    });
+            res({ success: 1, msg: "Đăng ký thành công" });
+          }
+        }, 1000);
+      });
+    }
+    else {
+      this._mSfsModule.signUp(phonenumber, password, otp)
+    }
   }
 
   getNewConnectCode() {
@@ -416,7 +486,7 @@ export class AwModule {
       locationProvider: 0,
       desiredAccuracy: 10,
       stationaryRadius: this.STATION_RADIUS,
-      distanceFilter: 500,
+      distanceFilter: this.DISTANCE_FILTER,
       debug: false, //  enable this hear sounds for background-geolocation life-cycle.
       stopOnTerminate: false, // enable this to clear background location settings when the app terminates
       interval: this.MIN_TIME_REQUEST,
@@ -425,21 +495,6 @@ export class AwModule {
 
     this.mBackgroundGeolocation.configure(config)
       .subscribe((location: BackgroundGeolocationResponse) => {
-
-        let userId = this._mUser.id
-
-        this.getLastestStep(userId).then((data: Location) => {
-          let niceLocation = new Location("", location.latitude, location.longitude, location.time);
-
-          if (data) {
-            if (new Date().getTime() - data.time >= this.MIN_TIME_REQUEST) {
-              this.pushNewBackgroundLocation(userId, niceLocation);
-            }
-          }
-          else {
-            this.pushNewBackgroundLocation(userId, niceLocation);
-          }
-        });
 
         // IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
         // and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
@@ -452,12 +507,18 @@ export class AwModule {
     });
   }
 
+  logBackgroundLocations() {
+    this.mBackgroundGeolocation.getLocations().then(data => {
+      console.log("logBackgroundLocations", data);
+    });
+  }
+
   stopBackgroundGeolocation() {
     this.mBackgroundGeolocation.stop();
   }
 
   //------------------------------------Firebase---------------------
-  getLastestStep(userId: string) {
+  getLastestStep(userId: string, date: Date) {
     return new Promise((res, rej) => {
       let tempReq = this.getUserTraces(userId, Utils.getRequestDate(new Date())).subscribe((data: Trace) => {
         tempReq.unsubscribe();
@@ -475,8 +536,9 @@ export class AwModule {
   pushNewBackgroundLocation(userId: string, location: Location) {
     return new Promise((res, rej) => {
       let trackedLocation = new Location("", location.latLng.lat, location.latLng.lng, location.time)
-      this._mFirebaseModule.pushLocation(userId, Utils.getRequestDate(new Date()), trackedLocation).then(() => {
-        this.storage.set("last-upload-location-time", location.time)
+      this._mFirebaseModule.pushLocation(userId, Utils.getRequestDate(new Date(location.time)), trackedLocation).then(() => {
+        this.storage.set("last-upload-location", JSON.stringify(location));
+
         res();
       });
     });
@@ -488,11 +550,13 @@ export class AwModule {
    * 1. phonenumber: Phonenumber người dùng
    * 2. password: Password MD5 của người dùng
    * 3. not-upload-locations-yet: Danh sách các Step chưa được up lên Server
-   * 4. last-upload-location-time: timestamp của Step cuối cùng up thành công lên Server
-   *  (Chỉ = 0 trong lần đầu tiên sử dụng ứng dụng)
+   * 4. last-upload-location: Location cuối cùng up thành công lên Server
+   *  (= null trong lần đầu tiên sử dụng ứng dụng)
    */
 
   saveUserInfoToStorage(phonenumber: string, password: string) {
+    console.log("saveee");
+    
     this.storage.set('phonenumber', phonenumber);
     this.storage.set('password', Md5.hashStr(password));
   }
@@ -501,8 +565,6 @@ export class AwModule {
     this.storage.remove("phonenumber");
     this.storage.remove("password");
     this.storage.remove("not-upload-locations-yet");
-    // Nếu remove timestamp cuối cùng, khi đăng nhập vào tkhoản khác sẽ upload toàn bộ Steps hiện có
-    // this.storage.remove("last-upload-location-time");
   }
 
   getLastestUserDataFromStorage() {
@@ -521,6 +583,20 @@ export class AwModule {
         else {
           res(null);
         }
+      });
+    })
+  }
+
+  //------------------------------------Smartfox Server---------------------
+
+  getOtp(phonenumber: string) {
+    return this._mSfsModule.getOtp(phonenumber);
+  }
+
+  tryToSignUp() {
+    return new Promise((res, rej) => {
+      this._mSfsModule.login("", "").then(() => {
+        res();
       });
     })
   }
